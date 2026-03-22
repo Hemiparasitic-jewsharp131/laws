@@ -4,6 +4,8 @@
 
 laws emulates AWS services locally for development and testing. No Docker required, no Python runtime — just a single binary.
 
+[![laws demo](https://img.youtube.com/vi/rWvwflxIy3I/maxresdefault.jpg)](https://www.youtube.com/watch?v=rWvwflxIy3I)
+
 <details>
 <summary>Supported Services (184)</summary>
 
