@@ -1,6 +1,6 @@
 # laws
 
-**L**ocal **AWS** — A lightweight, blazing-fast AWS service emulator written in Rust.
+**L**ocal **AWS** — A lightweight AWS service emulator written in Rust.
 
 laws emulates AWS services locally for development and testing. No Docker required, no Python runtime — just a single binary.
 
