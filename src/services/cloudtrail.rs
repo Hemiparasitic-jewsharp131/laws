@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -16,7 +16,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Trail {
     pub name: String,
     pub arn: String,
@@ -26,7 +26,7 @@ pub struct Trail {
     pub home_region: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct CloudTrailEvent {
     pub event_id: String,
     pub event_name: String,
@@ -39,16 +39,9 @@ pub struct CloudTrailEvent {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct CloudTrailState {
-    pub trails: DashMap<String, Trail>,
-}
-
-impl Default for CloudTrailState {
-    fn default() -> Self {
-        Self {
-            trails: DashMap::new(),
-        }
-    }
+    pub trails: PersistedDashMap<Trail>,
 }
 
 // ---------------------------------------------------------------------------

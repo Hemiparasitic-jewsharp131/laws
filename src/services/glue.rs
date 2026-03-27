@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -16,14 +16,14 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct GlueDatabase {
     pub name: String,
     pub catalog_id: String,
     pub create_time: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct GlueTable {
     pub name: String,
     pub database_name: String,
@@ -31,7 +31,7 @@ pub struct GlueTable {
     pub create_time: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct GlueCrawler {
     pub name: String,
     pub role: String,
@@ -45,20 +45,11 @@ pub struct GlueCrawler {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct GlueState {
-    pub databases: DashMap<String, GlueDatabase>,
-    pub tables: DashMap<String, GlueTable>,
-    pub crawlers: DashMap<String, GlueCrawler>,
-}
-
-impl Default for GlueState {
-    fn default() -> Self {
-        Self {
-            databases: DashMap::new(),
-            tables: DashMap::new(),
-            crawlers: DashMap::new(),
-        }
-    }
+    pub databases: PersistedDashMap<GlueDatabase>,
+    pub tables: PersistedDashMap<GlueTable>,
+    pub crawlers: PersistedDashMap<GlueCrawler>,
 }
 
 // ---------------------------------------------------------------------------

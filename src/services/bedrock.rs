@@ -1,10 +1,10 @@
+use crate::persistence::PersistedDashMap;
 use std::sync::Arc;
 
 use axum::extract::State;
 use axum::response::Response;
 use axum::routing::{get, post};
 use axum::Json;
-use dashmap::DashMap;
 use serde_json::{json, Value};
 
 use crate::error::LawsError;
@@ -21,7 +21,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct ModelCustomizationJob {
     pub job_arn: String,
     pub job_name: String,
@@ -31,7 +31,7 @@ pub struct ModelCustomizationJob {
     pub created_at: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct CustomModel {
     pub model_arn: String,
     pub model_name: String,
@@ -43,18 +43,10 @@ pub struct CustomModel {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct BedrockState {
-    pub model_customization_jobs: DashMap<String, ModelCustomizationJob>,
-    pub custom_models: DashMap<String, CustomModel>,
-}
-
-impl Default for BedrockState {
-    fn default() -> Self {
-        Self {
-            model_customization_jobs: DashMap::new(),
-            custom_models: DashMap::new(),
-        }
-    }
+    pub model_customization_jobs: PersistedDashMap<ModelCustomizationJob>,
+    pub custom_models: PersistedDashMap<CustomModel>,
 }
 
 // ---------------------------------------------------------------------------

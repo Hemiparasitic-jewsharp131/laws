@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -16,7 +16,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct FhirDatastore {
     pub datastore_id: String,
     pub datastore_arn: String,
@@ -27,7 +27,7 @@ pub struct FhirDatastore {
     pub created_at: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct FhirImportJob {
     pub job_id: String,
     pub datastore_id: String,
@@ -41,18 +41,10 @@ pub struct FhirImportJob {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct HealthLakeState {
-    pub datastores: DashMap<String, FhirDatastore>,
-    pub import_jobs: DashMap<String, FhirImportJob>,
-}
-
-impl Default for HealthLakeState {
-    fn default() -> Self {
-        Self {
-            datastores: DashMap::new(),
-            import_jobs: DashMap::new(),
-        }
-    }
+    pub datastores: PersistedDashMap<FhirDatastore>,
+    pub import_jobs: PersistedDashMap<FhirImportJob>,
 }
 
 // ---------------------------------------------------------------------------

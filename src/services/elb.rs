@@ -1,7 +1,7 @@
+use crate::persistence::PersistedDashMap;
 use axum::body::Bytes;
 use axum::http::{HeaderMap, Uri};
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -19,7 +19,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct LoadBalancer {
     pub name: String,
     pub arn: String,
@@ -30,7 +30,7 @@ pub struct LoadBalancer {
     pub vpc_id: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct TargetGroup {
     pub name: String,
     pub arn: String,
@@ -45,18 +45,10 @@ pub struct TargetGroup {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct ElbState {
-    pub load_balancers: DashMap<String, LoadBalancer>,
-    pub target_groups: DashMap<String, TargetGroup>,
-}
-
-impl Default for ElbState {
-    fn default() -> Self {
-        Self {
-            load_balancers: DashMap::new(),
-            target_groups: DashMap::new(),
-        }
-    }
+    pub load_balancers: PersistedDashMap<LoadBalancer>,
+    pub target_groups: PersistedDashMap<TargetGroup>,
 }
 
 // ---------------------------------------------------------------------------

@@ -1,10 +1,10 @@
+use crate::persistence::PersistedDashMap;
 use std::sync::Arc;
 
 use axum::body::Bytes;
 use axum::extract::{Path, State};
 use axum::response::{IntoResponse, Response};
 use axum::routing::{get, post};
-use dashmap::DashMap;
 use http::StatusCode;
 
 use crate::error::LawsError;
@@ -21,7 +21,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Distribution {
     pub id: String,
     pub arn: String,
@@ -35,16 +35,9 @@ pub struct Distribution {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct CloudFrontState {
-    pub distributions: DashMap<String, Distribution>,
-}
-
-impl Default for CloudFrontState {
-    fn default() -> Self {
-        Self {
-            distributions: DashMap::new(),
-        }
-    }
+    pub distributions: PersistedDashMap<Distribution>,
 }
 
 // ---------------------------------------------------------------------------

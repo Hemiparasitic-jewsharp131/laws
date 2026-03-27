@@ -1,10 +1,10 @@
+use crate::persistence::PersistedDashMap;
 use std::sync::Arc;
 
 use axum::extract::{Path, State};
 use axum::response::Response;
 use axum::routing::{get, post};
 use axum::Json;
-use dashmap::DashMap;
 use serde_json::{json, Value};
 
 use crate::error::LawsError;
@@ -21,14 +21,14 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct IotThing {
     pub thing_name: String,
     pub thing_arn: String,
     pub attributes: Value,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct IotPolicy {
     pub policy_name: String,
     pub policy_arn: String,
@@ -39,18 +39,10 @@ pub struct IotPolicy {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct IotState {
-    pub things: DashMap<String, IotThing>,
-    pub policies: DashMap<String, IotPolicy>,
-}
-
-impl Default for IotState {
-    fn default() -> Self {
-        Self {
-            things: DashMap::new(),
-            policies: DashMap::new(),
-        }
-    }
+    pub things: PersistedDashMap<IotThing>,
+    pub policies: PersistedDashMap<IotPolicy>,
 }
 
 // ---------------------------------------------------------------------------

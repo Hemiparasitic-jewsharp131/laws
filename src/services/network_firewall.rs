@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -16,7 +16,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Firewall {
     pub firewall_name: String,
     pub firewall_arn: String,
@@ -27,7 +27,7 @@ pub struct Firewall {
     pub status: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct FirewallPolicy {
     pub policy_name: String,
     pub policy_arn: String,
@@ -35,7 +35,7 @@ pub struct FirewallPolicy {
     pub description: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct RuleGroup {
     pub rule_group_name: String,
     pub rule_group_arn: String,
@@ -49,20 +49,11 @@ pub struct RuleGroup {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct NetworkFirewallState {
-    pub firewalls: DashMap<String, Firewall>,
-    pub policies: DashMap<String, FirewallPolicy>,
-    pub rule_groups: DashMap<String, RuleGroup>,
-}
-
-impl Default for NetworkFirewallState {
-    fn default() -> Self {
-        Self {
-            firewalls: DashMap::new(),
-            policies: DashMap::new(),
-            rule_groups: DashMap::new(),
-        }
-    }
+    pub firewalls: PersistedDashMap<Firewall>,
+    pub policies: PersistedDashMap<FirewallPolicy>,
+    pub rule_groups: PersistedDashMap<RuleGroup>,
 }
 
 // ---------------------------------------------------------------------------

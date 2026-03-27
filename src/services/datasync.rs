@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -16,7 +16,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct DataSyncTask {
     pub task_arn: String,
     pub name: String,
@@ -25,7 +25,7 @@ pub struct DataSyncTask {
     pub destination_location_arn: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct DataSyncLocation {
     pub location_arn: String,
     pub location_uri: String,
@@ -36,18 +36,10 @@ pub struct DataSyncLocation {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct DataSyncState {
-    pub tasks: DashMap<String, DataSyncTask>,
-    pub locations: DashMap<String, DataSyncLocation>,
-}
-
-impl Default for DataSyncState {
-    fn default() -> Self {
-        Self {
-            tasks: DashMap::new(),
-            locations: DashMap::new(),
-        }
-    }
+    pub tasks: PersistedDashMap<DataSyncTask>,
+    pub locations: PersistedDashMap<DataSyncLocation>,
 }
 
 // ---------------------------------------------------------------------------

@@ -1,3 +1,4 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
 use dashmap::DashMap;
 use http::StatusCode;
@@ -16,7 +17,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct CloudMapNamespace {
     pub id: String,
     pub name: String,
@@ -25,13 +26,14 @@ pub struct CloudMapNamespace {
     pub created: f64,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct CloudMapService {
     pub id: String,
     pub name: String,
     pub arn: String,
     pub namespace_id: String,
     pub created: f64,
+    #[serde(skip)]
     pub instances: DashMap<String, Value>,
 }
 
@@ -39,18 +41,10 @@ pub struct CloudMapService {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct CloudMapState {
-    pub namespaces: DashMap<String, CloudMapNamespace>,
-    pub services: DashMap<String, CloudMapService>,
-}
-
-impl Default for CloudMapState {
-    fn default() -> Self {
-        Self {
-            namespaces: DashMap::new(),
-            services: DashMap::new(),
-        }
-    }
+    pub namespaces: PersistedDashMap<CloudMapNamespace>,
+    pub services: PersistedDashMap<CloudMapService>,
 }
 
 // ---------------------------------------------------------------------------

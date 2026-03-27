@@ -1,8 +1,8 @@
+use crate::persistence::PersistedDashMap;
 use std::sync::Arc;
 
 use axum::extract::{Path, State};
 use axum::response::Response;
-use dashmap::DashMap;
 use serde_json::{json, Value};
 
 use crate::error::LawsError;
@@ -19,7 +19,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Vault {
     pub vault_name: String,
     pub vault_arn: String,
@@ -32,16 +32,9 @@ pub struct Vault {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct GlacierState {
-    pub vaults: DashMap<String, Vault>,
-}
-
-impl Default for GlacierState {
-    fn default() -> Self {
-        Self {
-            vaults: DashMap::new(),
-        }
-    }
+    pub vaults: PersistedDashMap<Vault>,
 }
 
 // ---------------------------------------------------------------------------

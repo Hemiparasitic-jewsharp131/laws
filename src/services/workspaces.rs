@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -16,7 +16,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Workspace {
     pub workspace_id: String,
     pub directory_id: String,
@@ -26,7 +26,7 @@ pub struct Workspace {
     pub ip_address: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct WorkspaceDirectory {
     pub directory_id: String,
     pub directory_name: String,
@@ -39,18 +39,10 @@ pub struct WorkspaceDirectory {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct WorkSpacesState {
-    pub workspaces: DashMap<String, Workspace>,
-    pub directories: DashMap<String, WorkspaceDirectory>,
-}
-
-impl Default for WorkSpacesState {
-    fn default() -> Self {
-        Self {
-            workspaces: DashMap::new(),
-            directories: DashMap::new(),
-        }
-    }
+    pub workspaces: PersistedDashMap<Workspace>,
+    pub directories: PersistedDashMap<WorkspaceDirectory>,
 }
 
 // ---------------------------------------------------------------------------

@@ -1,9 +1,9 @@
+use crate::persistence::PersistedDashMap;
 use std::sync::Arc;
 
 use axum::extract::{Path, State};
 use axum::response::Response;
 use axum::Json;
-use dashmap::DashMap;
 use serde_json::{json, Value};
 
 use crate::error::LawsError;
@@ -20,7 +20,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct GlobalNetwork {
     pub global_network_id: String,
     pub global_network_arn: String,
@@ -29,7 +29,7 @@ pub struct GlobalNetwork {
     pub created_at: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Site {
     pub site_id: String,
     pub site_arn: String,
@@ -39,7 +39,7 @@ pub struct Site {
     pub created_at: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Device {
     pub device_id: String,
     pub device_arn: String,
@@ -54,20 +54,11 @@ pub struct Device {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct NetworkManagerState {
-    pub global_networks: DashMap<String, GlobalNetwork>,
-    pub sites: DashMap<String, Site>,
-    pub devices: DashMap<String, Device>,
-}
-
-impl Default for NetworkManagerState {
-    fn default() -> Self {
-        Self {
-            global_networks: DashMap::new(),
-            sites: DashMap::new(),
-            devices: DashMap::new(),
-        }
-    }
+    pub global_networks: PersistedDashMap<GlobalNetwork>,
+    pub sites: PersistedDashMap<Site>,
+    pub devices: PersistedDashMap<Device>,
 }
 
 // ---------------------------------------------------------------------------

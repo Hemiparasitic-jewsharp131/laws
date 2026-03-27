@@ -1,3 +1,4 @@
+use crate::persistence::PersistedDashMap;
 use std::sync::Arc;
 
 use axum::extract::{Path, State};
@@ -5,7 +6,6 @@ use axum::response::Response;
 use axum::routing::{get, post};
 use axum::Json;
 use chrono::Utc;
-use dashmap::DashMap;
 use serde::Deserialize;
 use serde_json::{json, Value};
 
@@ -23,7 +23,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct HttpApi {
     pub api_id: String,
     pub name: String,
@@ -33,7 +33,7 @@ pub struct HttpApi {
     pub created_date: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Route {
     pub route_id: String,
     pub api_id: String,
@@ -46,18 +46,10 @@ pub struct Route {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct ApiGatewayV2State {
-    pub apis: DashMap<String, HttpApi>,
-    pub routes: DashMap<String, Route>,
-}
-
-impl Default for ApiGatewayV2State {
-    fn default() -> Self {
-        Self {
-            apis: DashMap::new(),
-            routes: DashMap::new(),
-        }
-    }
+    pub apis: PersistedDashMap<HttpApi>,
+    pub routes: PersistedDashMap<Route>,
 }
 
 // ---------------------------------------------------------------------------

@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -12,7 +12,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct ForecastDataset {
     pub dataset_arn: String,
     pub dataset_name: String,
@@ -21,7 +21,7 @@ pub struct ForecastDataset {
     pub status: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Predictor {
     pub predictor_arn: String,
     pub predictor_name: String,
@@ -29,7 +29,7 @@ pub struct Predictor {
     pub algorithm_arn: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Forecast {
     pub forecast_arn: String,
     pub forecast_name: String,
@@ -41,20 +41,11 @@ pub struct Forecast {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct ForecastState {
-    pub datasets: DashMap<String, ForecastDataset>,
-    pub predictors: DashMap<String, Predictor>,
-    pub forecasts: DashMap<String, Forecast>,
-}
-
-impl Default for ForecastState {
-    fn default() -> Self {
-        Self {
-            datasets: DashMap::new(),
-            predictors: DashMap::new(),
-            forecasts: DashMap::new(),
-        }
-    }
+    pub datasets: PersistedDashMap<ForecastDataset>,
+    pub predictors: PersistedDashMap<Predictor>,
+    pub forecasts: PersistedDashMap<Forecast>,
 }
 
 // ---------------------------------------------------------------------------

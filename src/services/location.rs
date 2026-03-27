@@ -1,10 +1,10 @@
+use crate::persistence::PersistedDashMap;
 use std::sync::Arc;
 
 use axum::extract::{Path, State};
 use axum::response::Response;
 use axum::routing::{get, post};
 use axum::Json;
-use dashmap::DashMap;
 use serde_json::{json, Value};
 
 use crate::error::LawsError;
@@ -21,7 +21,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct LocationMap {
     pub map_name: String,
     pub arn: String,
@@ -30,7 +30,7 @@ pub struct LocationMap {
     pub created: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct GeofenceCollection {
     pub collection_name: String,
     pub arn: String,
@@ -38,7 +38,7 @@ pub struct GeofenceCollection {
     pub created: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Tracker {
     pub tracker_name: String,
     pub arn: String,
@@ -50,20 +50,11 @@ pub struct Tracker {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct LocationState {
-    pub maps: DashMap<String, LocationMap>,
-    pub geofence_collections: DashMap<String, GeofenceCollection>,
-    pub trackers: DashMap<String, Tracker>,
-}
-
-impl Default for LocationState {
-    fn default() -> Self {
-        Self {
-            maps: DashMap::new(),
-            geofence_collections: DashMap::new(),
-            trackers: DashMap::new(),
-        }
-    }
+    pub maps: PersistedDashMap<LocationMap>,
+    pub geofence_collections: PersistedDashMap<GeofenceCollection>,
+    pub trackers: PersistedDashMap<Tracker>,
 }
 
 // ---------------------------------------------------------------------------

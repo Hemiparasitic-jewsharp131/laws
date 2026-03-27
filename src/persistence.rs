@@ -8,8 +8,9 @@
 //! the persistence layer decoupled from individual service structs.
 
 use std::path::Path;
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
 
+use dashmap::DashMap;
 use rusqlite::{params, Connection};
 
 /// A thin wrapper around a SQLite connection that provides key-value storage
@@ -115,6 +116,16 @@ impl SqliteStore {
         Ok(())
     }
 
+    /// Delete all rows from a table.
+    pub fn delete_all(&self, table: &str) -> Result<(), String> {
+        self.ensure_table(table)?;
+        let sql = format!("DELETE FROM [{table}]");
+        let conn = self.conn.lock().map_err(|e| e.to_string())?;
+        conn.execute(&sql, [])
+            .map_err(|e| format!("delete_all({table}): {e}"))?;
+        Ok(())
+    }
+
     /// List all (key, data) pairs in a table.
     pub fn list(&self, table: &str) -> Result<Vec<(String, String)>, String> {
         self.ensure_table(table)?;
@@ -133,6 +144,149 @@ impl SqliteStore {
             result.push(r.map_err(|e| e.to_string())?);
         }
         Ok(result)
+    }
+}
+
+// ---------------------------------------------------------------------------
+// PersistedDashMap — drop-in replacement for DashMap<String, V>
+// ---------------------------------------------------------------------------
+
+/// A `DashMap<String, V>` wrapper that optionally persists mutations to SQLite.
+///
+/// When constructed without a `SqliteStore` (i.e. `--persist` is off), it
+/// behaves identically to a plain `DashMap`. When a store is provided, every
+/// `insert` / `remove` is written through, and the map is rehydrated on
+/// construction.
+///
+/// This is a **drop-in** replacement: it exposes the same surface as
+/// `DashMap` so existing service code compiles without changes beyond
+/// swapping the type.
+pub struct PersistedDashMap<V: Clone + Send + Sync + 'static> {
+    inner: DashMap<String, V>,
+    db: Option<Arc<SqliteStore>>,
+    table: String,
+}
+
+impl<V: Clone + Send + Sync + 'static> std::fmt::Debug for PersistedDashMap<V> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("PersistedDashMap")
+            .field("len", &self.inner.len())
+            .field("table", &self.table)
+            .finish()
+    }
+}
+
+impl<V: Clone + Send + Sync + 'static> Default for PersistedDashMap<V> {
+    fn default() -> Self {
+        Self {
+            inner: DashMap::new(),
+            db: None,
+            table: String::new(),
+        }
+    }
+}
+
+impl<V: Clone + Send + Sync + serde::Serialize + serde::de::DeserializeOwned + 'static>
+    PersistedDashMap<V>
+{
+    /// Create a persisted map that rehydrates from SQLite.
+    pub fn with_persistence(table: &str, db: Arc<SqliteStore>) -> Self {
+        let inner = DashMap::new();
+        if let Ok(rows) = db.list(table) {
+            for (key, json) in rows {
+                if let Ok(val) = serde_json::from_str::<V>(&json) {
+                    inner.insert(key, val);
+                }
+            }
+        }
+        Self {
+            inner,
+            db: Some(db),
+            table: table.to_string(),
+        }
+    }
+}
+
+impl<V: Clone + Send + Sync + 'static> PersistedDashMap<V> {
+    /// Insert a key-value pair (with optional write-through).
+    pub fn insert(&self, key: String, value: V)
+    where
+        V: serde::Serialize,
+    {
+        if let Some(ref db) = self.db {
+            if let Ok(json) = serde_json::to_string(&value) {
+                let _ = db.put(&self.table, &key, &json);
+            }
+        }
+        self.inner.insert(key, value);
+    }
+
+    /// Remove by key (with optional write-through).
+    pub fn remove(&self, key: &str) -> Option<(String, V)> {
+        if let Some(ref db) = self.db {
+            let _ = db.delete(&self.table, key);
+        }
+        self.inner.remove(key)
+    }
+
+    pub fn get(&self, key: &str) -> Option<dashmap::mapref::one::Ref<'_, String, V>> {
+        self.inner.get(key)
+    }
+
+    pub fn get_mut(&self, key: &str) -> Option<dashmap::mapref::one::RefMut<'_, String, V>> {
+        self.inner.get_mut(key)
+    }
+
+    pub fn contains_key(&self, key: &str) -> bool {
+        self.inner.contains_key(key)
+    }
+
+    pub fn iter(&self) -> dashmap::iter::Iter<'_, String, V> {
+        self.inner.iter()
+    }
+
+    pub fn len(&self) -> usize {
+        self.inner.len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.inner.is_empty()
+    }
+
+    pub fn clear(&self)
+    where
+        V: serde::Serialize,
+    {
+        self.inner.clear();
+        if let Some(ref db) = self.db {
+            let _ = db.delete_all(&self.table);
+        }
+    }
+
+    pub fn entry(&self, key: String) -> dashmap::Entry<'_, String, V> {
+        self.inner.entry(key)
+    }
+
+    pub fn iter_mut(&self) -> dashmap::iter::IterMut<'_, String, V> {
+        self.inner.iter_mut()
+    }
+
+    /// Retain only entries that satisfy the predicate.
+    pub fn retain(&self, f: impl FnMut(&String, &mut V) -> bool)
+    where
+        V: serde::Serialize,
+    {
+        self.inner.retain(f);
+        // Re-persist everything after retain (simplest approach)
+        if let Some(ref db) = self.db {
+            // Wipe the table and rewrite (retain may remove many)
+            let _ = db.delete_all(&self.table);
+            for entry in self.inner.iter() {
+                if let Ok(json) = serde_json::to_string(entry.value()) {
+                    let _ = db.put(&self.table, entry.key(), &json);
+                }
+            }
+        }
     }
 }
 

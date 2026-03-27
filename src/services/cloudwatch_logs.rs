@@ -1,3 +1,4 @@
+use crate::persistence::PersistedDashMap;
 use axum::{
     extract::State,
     http::HeaderMap,
@@ -5,7 +6,6 @@ use axum::{
     routing::post,
     Router,
 };
-use dashmap::DashMap;
 use http::StatusCode;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -43,7 +43,7 @@ pub struct LogGroup {
 }
 
 pub struct CloudWatchLogsState {
-    pub log_groups: Arc<DashMap<String, LogGroup>>,
+    pub log_groups: Arc<PersistedDashMap<LogGroup>>,
     pub account_id: String,
     pub region: String,
 }
@@ -51,7 +51,7 @@ pub struct CloudWatchLogsState {
 impl Default for CloudWatchLogsState {
     fn default() -> Self {
         Self {
-            log_groups: Arc::new(DashMap::new()),
+            log_groups: Arc::new(PersistedDashMap::default()),
             account_id: "000000000000".to_string(),
             region: "us-east-1".to_string(),
         }

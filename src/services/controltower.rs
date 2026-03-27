@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -16,7 +16,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct LandingZone {
     pub arn: String,
     pub identifier: String,
@@ -26,7 +26,7 @@ pub struct LandingZone {
     pub created_at: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct EnabledControl {
     pub arn: String,
     pub control_identifier: String,
@@ -39,18 +39,10 @@ pub struct EnabledControl {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct ControlTowerState {
-    pub landing_zones: DashMap<String, LandingZone>,
-    pub enabled_controls: DashMap<String, EnabledControl>,
-}
-
-impl Default for ControlTowerState {
-    fn default() -> Self {
-        Self {
-            landing_zones: DashMap::new(),
-            enabled_controls: DashMap::new(),
-        }
-    }
+    pub landing_zones: PersistedDashMap<LandingZone>,
+    pub enabled_controls: PersistedDashMap<EnabledControl>,
 }
 
 // ---------------------------------------------------------------------------

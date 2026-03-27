@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -12,7 +12,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct TextractJob {
     pub job_id: String,
     pub status: String,
@@ -23,16 +23,9 @@ pub struct TextractJob {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct TextractState {
-    pub jobs: DashMap<String, TextractJob>,
-}
-
-impl Default for TextractState {
-    fn default() -> Self {
-        Self {
-            jobs: DashMap::new(),
-        }
-    }
+    pub jobs: PersistedDashMap<TextractJob>,
 }
 
 // ---------------------------------------------------------------------------

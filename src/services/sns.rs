@@ -22,13 +22,13 @@ const REGION: &str = "us-east-1";
 // Domain types
 // ---------------------------------------------------------------------------
 
-#[derive(Clone, Debug)]
+#[derive(serde::Serialize, serde::Deserialize, Clone, Debug)]
 pub struct SnsTopic {
     pub arn: String,
     pub name: String,
 }
 
-#[derive(Clone, Debug)]
+#[derive(serde::Serialize, serde::Deserialize, Clone, Debug)]
 pub struct SnsSubscription {
     pub arn: String,
     pub topic_arn: String,

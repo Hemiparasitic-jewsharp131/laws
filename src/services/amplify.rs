@@ -1,9 +1,9 @@
+use crate::persistence::PersistedDashMap;
 use std::sync::Arc;
 
 use axum::extract::{Path, State};
 use axum::response::Response;
 use axum::Json;
-use dashmap::DashMap;
 use serde_json::{json, Value};
 
 use crate::error::LawsError;
@@ -20,7 +20,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct AmplifyApp {
     pub app_id: String,
     pub app_arn: String,
@@ -31,7 +31,7 @@ pub struct AmplifyApp {
     pub created_at: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct AmplifyBranch {
     pub app_id: String,
     pub branch_name: String,
@@ -45,18 +45,10 @@ pub struct AmplifyBranch {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct AmplifyState {
-    pub apps: DashMap<String, AmplifyApp>,
-    pub branches: DashMap<String, AmplifyBranch>,
-}
-
-impl Default for AmplifyState {
-    fn default() -> Self {
-        Self {
-            apps: DashMap::new(),
-            branches: DashMap::new(),
-        }
-    }
+    pub apps: PersistedDashMap<AmplifyApp>,
+    pub branches: PersistedDashMap<AmplifyBranch>,
 }
 
 // ---------------------------------------------------------------------------

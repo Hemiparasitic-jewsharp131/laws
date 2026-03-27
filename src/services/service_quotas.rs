@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -17,7 +17,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct ServiceQuota {
     pub service_code: String,
     pub service_name: String,
@@ -29,7 +29,7 @@ pub struct ServiceQuota {
     pub unit: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct QuotaChangeRequest {
     pub id: String,
     pub service_code: String,
@@ -44,15 +44,15 @@ pub struct QuotaChangeRequest {
 // ---------------------------------------------------------------------------
 
 pub struct ServiceQuotasState {
-    pub quotas: DashMap<String, ServiceQuota>,
-    pub requests: DashMap<String, QuotaChangeRequest>,
+    pub quotas: PersistedDashMap<ServiceQuota>,
+    pub requests: PersistedDashMap<QuotaChangeRequest>,
 }
 
 impl Default for ServiceQuotasState {
     fn default() -> Self {
         let state = Self {
-            quotas: DashMap::new(),
-            requests: DashMap::new(),
+            quotas: PersistedDashMap::default(),
+            requests: PersistedDashMap::default(),
         };
 
         // Seed with some default quotas

@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -16,7 +16,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Repository {
     pub name: String,
     pub arn: String,
@@ -32,16 +32,9 @@ pub struct Repository {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct CodeCommitState {
-    pub repositories: DashMap<String, Repository>,
-}
-
-impl Default for CodeCommitState {
-    fn default() -> Self {
-        Self {
-            repositories: DashMap::new(),
-        }
-    }
+    pub repositories: PersistedDashMap<Repository>,
 }
 
 // ---------------------------------------------------------------------------

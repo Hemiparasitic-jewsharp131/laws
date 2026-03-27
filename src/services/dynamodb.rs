@@ -1,3 +1,4 @@
+use crate::persistence::PersistedDashMap;
 use std::collections::HashMap;
 use std::sync::Arc;
 
@@ -7,7 +8,6 @@ use axum::http::HeaderMap;
 use axum::response::Response;
 use axum::routing::post;
 use chrono::Utc;
-use dashmap::DashMap;
 use serde_json::{json, Map, Value};
 
 use crate::error::LawsError;
@@ -17,7 +17,7 @@ use crate::protocol::json::{json_error_response, json_response, parse_target};
 // State & data model
 // ---------------------------------------------------------------------------
 
-#[derive(Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Clone)]
 pub struct DynamoTable {
     pub table_name: String,
     pub key_schema: Vec<KeySchemaElement>,
@@ -27,28 +27,21 @@ pub struct DynamoTable {
     pub status: String,
 }
 
-#[derive(Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Clone)]
 pub struct KeySchemaElement {
     pub attribute_name: String,
     pub key_type: String,
 }
 
-#[derive(Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Clone)]
 pub struct AttributeDefinition {
     pub attribute_name: String,
     pub attribute_type: String,
 }
 
+#[derive(Default)]
 pub struct DynamoDbState {
-    pub tables: DashMap<String, DynamoTable>,
-}
-
-impl Default for DynamoDbState {
-    fn default() -> Self {
-        Self {
-            tables: DashMap::new(),
-        }
-    }
+    pub tables: PersistedDashMap<DynamoTable>,
 }
 
 // ---------------------------------------------------------------------------

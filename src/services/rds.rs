@@ -1,7 +1,7 @@
+use crate::persistence::PersistedDashMap;
 use axum::body::Bytes;
 use axum::http::{HeaderMap, Uri};
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -19,7 +19,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct DbInstance {
     pub db_instance_identifier: String,
     pub db_instance_class: String,
@@ -30,7 +30,7 @@ pub struct DbInstance {
     pub port: u16,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct DbCluster {
     pub db_cluster_identifier: String,
     pub engine: String,
@@ -43,18 +43,10 @@ pub struct DbCluster {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct RdsState {
-    pub instances: DashMap<String, DbInstance>,
-    pub clusters: DashMap<String, DbCluster>,
-}
-
-impl Default for RdsState {
-    fn default() -> Self {
-        Self {
-            instances: DashMap::new(),
-            clusters: DashMap::new(),
-        }
-    }
+    pub instances: PersistedDashMap<DbInstance>,
+    pub clusters: PersistedDashMap<DbCluster>,
 }
 
 // ---------------------------------------------------------------------------

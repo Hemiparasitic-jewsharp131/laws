@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -16,7 +16,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Environment {
     pub id: String,
     pub arn: String,
@@ -33,16 +33,9 @@ pub struct Environment {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct Cloud9State {
-    pub environments: DashMap<String, Environment>,
-}
-
-impl Default for Cloud9State {
-    fn default() -> Self {
-        Self {
-            environments: DashMap::new(),
-        }
-    }
+    pub environments: PersistedDashMap<Environment>,
 }
 
 // ---------------------------------------------------------------------------

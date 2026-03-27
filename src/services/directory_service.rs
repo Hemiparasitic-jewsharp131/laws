@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -16,7 +16,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Directory {
     pub directory_id: String,
     pub name: String,
@@ -30,16 +30,9 @@ pub struct Directory {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct DirectoryServiceState {
-    pub directories: DashMap<String, Directory>,
-}
-
-impl Default for DirectoryServiceState {
-    fn default() -> Self {
-        Self {
-            directories: DashMap::new(),
-        }
-    }
+    pub directories: PersistedDashMap<Directory>,
 }
 
 // ---------------------------------------------------------------------------

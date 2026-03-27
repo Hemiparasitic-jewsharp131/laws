@@ -1,3 +1,4 @@
+use crate::persistence::PersistedDashMap;
 use std::sync::Arc;
 
 use axum::body::Bytes;
@@ -6,7 +7,6 @@ use axum::http::StatusCode;
 use axum::response::{IntoResponse, Response};
 use axum::routing::get;
 use chrono::Utc;
-use dashmap::DashMap;
 use serde::{Deserialize, Serialize};
 
 use crate::error::LawsError;
@@ -36,18 +36,10 @@ pub struct ResourceRecordSet {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct Route53State {
-    pub zones: DashMap<String, HostedZone>,
-    pub record_sets: DashMap<String, Vec<ResourceRecordSet>>,
-}
-
-impl Default for Route53State {
-    fn default() -> Self {
-        Self {
-            zones: DashMap::new(),
-            record_sets: DashMap::new(),
-        }
-    }
+    pub zones: PersistedDashMap<HostedZone>,
+    pub record_sets: PersistedDashMap<Vec<ResourceRecordSet>>,
 }
 
 // ---------------------------------------------------------------------------

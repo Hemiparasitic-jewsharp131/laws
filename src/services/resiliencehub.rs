@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -16,7 +16,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct ResilienceApp {
     pub app_arn: String,
     pub name: String,
@@ -26,7 +26,7 @@ pub struct ResilienceApp {
     pub created_at: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct ResiliencyPolicy {
     pub policy_arn: String,
     pub policy_name: String,
@@ -39,18 +39,10 @@ pub struct ResiliencyPolicy {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct ResilienceHubState {
-    pub apps: DashMap<String, ResilienceApp>,
-    pub policies: DashMap<String, ResiliencyPolicy>,
-}
-
-impl Default for ResilienceHubState {
-    fn default() -> Self {
-        Self {
-            apps: DashMap::new(),
-            policies: DashMap::new(),
-        }
-    }
+    pub apps: PersistedDashMap<ResilienceApp>,
+    pub policies: PersistedDashMap<ResiliencyPolicy>,
 }
 
 // ---------------------------------------------------------------------------

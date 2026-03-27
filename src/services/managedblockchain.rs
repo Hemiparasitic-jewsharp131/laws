@@ -1,9 +1,9 @@
+use crate::persistence::PersistedDashMap;
 use std::sync::Arc;
 
 use axum::extract::{Path, State};
 use axum::response::Response;
 use axum::Json;
-use dashmap::DashMap;
 use serde_json::{json, Value};
 
 use crate::error::LawsError;
@@ -20,7 +20,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Network {
     pub id: String,
     pub name: String,
@@ -30,7 +30,7 @@ pub struct Network {
     pub created_at: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Node {
     pub id: String,
     pub network_id: String,
@@ -45,18 +45,10 @@ pub struct Node {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct ManagedBlockchainState {
-    pub networks: DashMap<String, Network>,
-    pub nodes: DashMap<String, Node>,
-}
-
-impl Default for ManagedBlockchainState {
-    fn default() -> Self {
-        Self {
-            networks: DashMap::new(),
-            nodes: DashMap::new(),
-        }
-    }
+    pub networks: PersistedDashMap<Network>,
+    pub nodes: PersistedDashMap<Node>,
 }
 
 // ---------------------------------------------------------------------------

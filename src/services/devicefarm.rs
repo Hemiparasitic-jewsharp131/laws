@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -16,14 +16,14 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct DeviceFarmProject {
     pub arn: String,
     pub name: String,
     pub created: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Upload {
     pub arn: String,
     pub project_arn: String,
@@ -36,18 +36,10 @@ pub struct Upload {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct DeviceFarmState {
-    pub projects: DashMap<String, DeviceFarmProject>,
-    pub uploads: DashMap<String, Upload>,
-}
-
-impl Default for DeviceFarmState {
-    fn default() -> Self {
-        Self {
-            projects: DashMap::new(),
-            uploads: DashMap::new(),
-        }
-    }
+    pub projects: PersistedDashMap<DeviceFarmProject>,
+    pub uploads: PersistedDashMap<Upload>,
 }
 
 // ---------------------------------------------------------------------------

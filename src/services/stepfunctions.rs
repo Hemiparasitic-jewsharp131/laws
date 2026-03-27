@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -16,7 +16,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct StateMachine {
     pub name: String,
     pub arn: String,
@@ -26,7 +26,7 @@ pub struct StateMachine {
     pub creation_date: f64,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Execution {
     pub execution_arn: String,
     pub state_machine_arn: String,
@@ -41,18 +41,10 @@ pub struct Execution {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct StepFunctionsState {
-    pub state_machines: DashMap<String, StateMachine>,
-    pub executions: DashMap<String, Execution>,
-}
-
-impl Default for StepFunctionsState {
-    fn default() -> Self {
-        Self {
-            state_machines: DashMap::new(),
-            executions: DashMap::new(),
-        }
-    }
+    pub state_machines: PersistedDashMap<StateMachine>,
+    pub executions: PersistedDashMap<Execution>,
 }
 
 // ---------------------------------------------------------------------------

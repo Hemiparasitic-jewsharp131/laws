@@ -1,3 +1,4 @@
+use crate::persistence::PersistedDashMap;
 use std::sync::Arc;
 
 use axum::extract::{Path, State};
@@ -5,7 +6,6 @@ use axum::response::Response;
 use axum::routing::{get, post};
 use axum::Json;
 use chrono::Utc;
-use dashmap::DashMap;
 use serde::Deserialize;
 use serde_json::{json, Value};
 
@@ -23,7 +23,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Schedule {
     pub name: String,
     pub arn: String,
@@ -36,14 +36,14 @@ pub struct Schedule {
     pub last_modified_at: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct ScheduleTarget {
     pub arn: String,
     pub role_arn: String,
     pub input: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct ScheduleGroup {
     pub name: String,
     pub arn: String,
@@ -57,13 +57,13 @@ pub struct ScheduleGroup {
 // ---------------------------------------------------------------------------
 
 pub struct EventBridgeSchedulerState {
-    pub schedules: DashMap<String, Schedule>,
-    pub schedule_groups: DashMap<String, ScheduleGroup>,
+    pub schedules: PersistedDashMap<Schedule>,
+    pub schedule_groups: PersistedDashMap<ScheduleGroup>,
 }
 
 impl Default for EventBridgeSchedulerState {
     fn default() -> Self {
-        let schedule_groups = DashMap::new();
+        let schedule_groups = PersistedDashMap::default();
         // Seed default group
         let now = Utc::now().to_rfc3339();
         schedule_groups.insert(
@@ -78,7 +78,7 @@ impl Default for EventBridgeSchedulerState {
         );
 
         Self {
-            schedules: DashMap::new(),
+            schedules: PersistedDashMap::default(),
             schedule_groups,
         }
     }

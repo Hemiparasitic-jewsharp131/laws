@@ -1,3 +1,4 @@
+use crate::persistence::PersistedDashMap;
 use std::sync::Arc;
 
 use axum::extract::{Path, State};
@@ -5,7 +6,6 @@ use axum::response::Response;
 use axum::routing::{get, post};
 use axum::Json;
 use chrono::Utc;
-use dashmap::DashMap;
 use serde::Deserialize;
 use serde_json::{json, Value};
 
@@ -23,7 +23,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Application {
     pub application_id: String,
     pub name: String,
@@ -35,7 +35,7 @@ pub struct Application {
     pub updated_at: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct JobRun {
     pub application_id: String,
     pub job_run_id: String,
@@ -51,18 +51,10 @@ pub struct JobRun {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct EmrServerlessState {
-    pub applications: DashMap<String, Application>,
-    pub job_runs: DashMap<String, JobRun>,
-}
-
-impl Default for EmrServerlessState {
-    fn default() -> Self {
-        Self {
-            applications: DashMap::new(),
-            job_runs: DashMap::new(),
-        }
-    }
+    pub applications: PersistedDashMap<Application>,
+    pub job_runs: PersistedDashMap<JobRun>,
 }
 
 // ---------------------------------------------------------------------------

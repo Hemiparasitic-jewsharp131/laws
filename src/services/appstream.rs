@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -16,7 +16,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Fleet {
     pub name: String,
     pub arn: String,
@@ -25,7 +25,7 @@ pub struct Fleet {
     pub created_at: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Stack {
     pub name: String,
     pub arn: String,
@@ -33,7 +33,7 @@ pub struct Stack {
     pub created_at: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct ImageBuilder {
     pub name: String,
     pub arn: String,
@@ -46,20 +46,11 @@ pub struct ImageBuilder {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct AppStreamState {
-    pub fleets: DashMap<String, Fleet>,
-    pub stacks: DashMap<String, Stack>,
-    pub image_builders: DashMap<String, ImageBuilder>,
-}
-
-impl Default for AppStreamState {
-    fn default() -> Self {
-        Self {
-            fleets: DashMap::new(),
-            stacks: DashMap::new(),
-            image_builders: DashMap::new(),
-        }
-    }
+    pub fleets: PersistedDashMap<Fleet>,
+    pub stacks: PersistedDashMap<Stack>,
+    pub image_builders: PersistedDashMap<ImageBuilder>,
 }
 
 // ---------------------------------------------------------------------------

@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -16,7 +16,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct TransferServer {
     pub server_id: String,
     pub arn: String,
@@ -26,7 +26,7 @@ pub struct TransferServer {
     pub protocols: Vec<String>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct TransferUser {
     pub server_id: String,
     pub user_name: String,
@@ -39,18 +39,10 @@ pub struct TransferUser {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct TransferState {
-    pub servers: DashMap<String, TransferServer>,
-    pub users: DashMap<String, TransferUser>,
-}
-
-impl Default for TransferState {
-    fn default() -> Self {
-        Self {
-            servers: DashMap::new(),
-            users: DashMap::new(),
-        }
-    }
+    pub servers: PersistedDashMap<TransferServer>,
+    pub users: PersistedDashMap<TransferUser>,
 }
 
 // ---------------------------------------------------------------------------

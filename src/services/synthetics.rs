@@ -1,3 +1,4 @@
+use crate::persistence::PersistedDashMap;
 use std::sync::Arc;
 
 use axum::extract::{Path, State};
@@ -5,7 +6,6 @@ use axum::response::Response;
 use axum::routing::{get, post};
 use axum::Json;
 use chrono::Utc;
-use dashmap::DashMap;
 use serde::Deserialize;
 use serde_json::{json, Value};
 
@@ -23,7 +23,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Canary {
     pub name: String,
     pub arn: String,
@@ -39,16 +39,9 @@ pub struct Canary {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct SyntheticsState {
-    pub canaries: DashMap<String, Canary>,
-}
-
-impl Default for SyntheticsState {
-    fn default() -> Self {
-        Self {
-            canaries: DashMap::new(),
-        }
-    }
+    pub canaries: PersistedDashMap<Canary>,
 }
 
 // ---------------------------------------------------------------------------

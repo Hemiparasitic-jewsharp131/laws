@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -16,7 +16,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct CodeBuildProject {
     pub name: String,
     pub arn: String,
@@ -26,7 +26,7 @@ pub struct CodeBuildProject {
     pub created: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct CodeBuildBuild {
     pub id: String,
     pub arn: String,
@@ -41,18 +41,10 @@ pub struct CodeBuildBuild {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct CodeBuildState {
-    pub projects: DashMap<String, CodeBuildProject>,
-    pub builds: DashMap<String, CodeBuildBuild>,
-}
-
-impl Default for CodeBuildState {
-    fn default() -> Self {
-        Self {
-            projects: DashMap::new(),
-            builds: DashMap::new(),
-        }
-    }
+    pub projects: PersistedDashMap<CodeBuildProject>,
+    pub builds: PersistedDashMap<CodeBuildBuild>,
 }
 
 // ---------------------------------------------------------------------------

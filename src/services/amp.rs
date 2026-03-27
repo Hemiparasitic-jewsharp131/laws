@@ -1,3 +1,5 @@
+use crate::persistence::PersistedDashMap;
+use dashmap::DashMap;
 use std::sync::Arc;
 
 use axum::extract::{Path, State};
@@ -5,7 +7,6 @@ use axum::response::Response;
 use axum::routing::{get, post};
 use axum::Json;
 use chrono::Utc;
-use dashmap::DashMap;
 use serde::Deserialize;
 use serde_json::{json, Value};
 
@@ -23,17 +24,18 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Workspace {
     pub workspace_id: String,
     pub arn: String,
     pub alias: String,
     pub status: String,
     pub created_at: String,
+    #[serde(skip)]
     pub rule_groups_namespaces: DashMap<String, RuleGroupsNamespace>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct RuleGroupsNamespace {
     pub name: String,
     pub arn: String,
@@ -46,16 +48,9 @@ pub struct RuleGroupsNamespace {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct AmpState {
-    pub workspaces: DashMap<String, Workspace>,
-}
-
-impl Default for AmpState {
-    fn default() -> Self {
-        Self {
-            workspaces: DashMap::new(),
-        }
-    }
+    pub workspaces: PersistedDashMap<Workspace>,
 }
 
 // ---------------------------------------------------------------------------

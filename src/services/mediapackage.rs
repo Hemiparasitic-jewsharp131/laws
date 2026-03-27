@@ -1,9 +1,9 @@
+use crate::persistence::PersistedDashMap;
 use std::sync::Arc;
 
 use axum::extract::{Path, State};
 use axum::response::Response;
 use axum::Json;
-use dashmap::DashMap;
 use serde_json::{json, Value};
 
 use crate::error::LawsError;
@@ -20,7 +20,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Channel {
     pub id: String,
     pub arn: String,
@@ -28,7 +28,7 @@ pub struct Channel {
     pub hls_ingest_url: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct OriginEndpoint {
     pub id: String,
     pub arn: String,
@@ -43,18 +43,10 @@ pub struct OriginEndpoint {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct MediaPackageState {
-    pub channels: DashMap<String, Channel>,
-    pub origin_endpoints: DashMap<String, OriginEndpoint>,
-}
-
-impl Default for MediaPackageState {
-    fn default() -> Self {
-        Self {
-            channels: DashMap::new(),
-            origin_endpoints: DashMap::new(),
-        }
-    }
+    pub channels: PersistedDashMap<Channel>,
+    pub origin_endpoints: PersistedDashMap<OriginEndpoint>,
 }
 
 // ---------------------------------------------------------------------------

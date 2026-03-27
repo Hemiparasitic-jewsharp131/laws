@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -12,7 +12,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct NotebookInstance {
     pub name: String,
     pub arn: String,
@@ -22,7 +22,7 @@ pub struct NotebookInstance {
     pub created: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct TrainingJob {
     pub name: String,
     pub arn: String,
@@ -33,7 +33,7 @@ pub struct TrainingJob {
     pub training_start_time: Option<String>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct SageMakerEndpoint {
     pub name: String,
     pub arn: String,
@@ -46,20 +46,11 @@ pub struct SageMakerEndpoint {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct SageMakerState {
-    pub notebook_instances: DashMap<String, NotebookInstance>,
-    pub training_jobs: DashMap<String, TrainingJob>,
-    pub endpoints: DashMap<String, SageMakerEndpoint>,
-}
-
-impl Default for SageMakerState {
-    fn default() -> Self {
-        Self {
-            notebook_instances: DashMap::new(),
-            training_jobs: DashMap::new(),
-            endpoints: DashMap::new(),
-        }
-    }
+    pub notebook_instances: PersistedDashMap<NotebookInstance>,
+    pub training_jobs: PersistedDashMap<TrainingJob>,
+    pub endpoints: PersistedDashMap<SageMakerEndpoint>,
 }
 
 // ---------------------------------------------------------------------------

@@ -1,7 +1,7 @@
+use crate::persistence::PersistedDashMap;
 use axum::body::Bytes;
 use axum::http::{HeaderMap, Uri};
 use axum::response::Response;
-use dashmap::DashMap;
 
 use crate::error::LawsError;
 use crate::protocol::query::{parse_query_request, xml_error_response, xml_response};
@@ -17,7 +17,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Domain {
     pub domain_name: String,
     pub domain_id: String,
@@ -34,16 +34,9 @@ pub struct Domain {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct CloudSearchState {
-    pub domains: DashMap<String, Domain>,
-}
-
-impl Default for CloudSearchState {
-    fn default() -> Self {
-        Self {
-            domains: DashMap::new(),
-        }
-    }
+    pub domains: PersistedDashMap<Domain>,
 }
 
 // ---------------------------------------------------------------------------

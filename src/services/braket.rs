@@ -1,3 +1,4 @@
+use crate::persistence::PersistedDashMap;
 use std::sync::Arc;
 
 use axum::extract::{Path, State};
@@ -5,7 +6,6 @@ use axum::response::Response;
 use axum::routing::{get, post, put};
 use axum::Json;
 use chrono::Utc;
-use dashmap::DashMap;
 use serde::Deserialize;
 use serde_json::{json, Value};
 
@@ -23,7 +23,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct QuantumTask {
     pub quantum_task_arn: String,
     pub device_arn: String,
@@ -34,7 +34,7 @@ pub struct QuantumTask {
     pub created_at: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Device {
     pub device_arn: String,
     pub device_name: String,
@@ -48,13 +48,13 @@ pub struct Device {
 // ---------------------------------------------------------------------------
 
 pub struct BraketState {
-    pub quantum_tasks: DashMap<String, QuantumTask>,
-    pub devices: DashMap<String, Device>,
+    pub quantum_tasks: PersistedDashMap<QuantumTask>,
+    pub devices: PersistedDashMap<Device>,
 }
 
 impl Default for BraketState {
     fn default() -> Self {
-        let devices = DashMap::new();
+        let devices = PersistedDashMap::default();
         // Seed some default devices
         let sv1 = Device {
             device_arn: format!("arn:aws:braket:{REGION}::device/quantum-simulator/amazon/sv1"),
@@ -66,7 +66,7 @@ impl Default for BraketState {
         devices.insert(sv1.device_arn.clone(), sv1);
 
         Self {
-            quantum_tasks: DashMap::new(),
+            quantum_tasks: PersistedDashMap::default(),
             devices,
         }
     }

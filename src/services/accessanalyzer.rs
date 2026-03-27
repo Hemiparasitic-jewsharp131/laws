@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -16,7 +16,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Analyzer {
     pub name: String,
     pub arn: String,
@@ -25,7 +25,7 @@ pub struct Analyzer {
     pub created_at: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Finding {
     pub id: String,
     pub analyzer_arn: String,
@@ -39,18 +39,10 @@ pub struct Finding {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct AccessAnalyzerState {
-    pub analyzers: DashMap<String, Analyzer>,
-    pub findings: DashMap<String, Finding>,
-}
-
-impl Default for AccessAnalyzerState {
-    fn default() -> Self {
-        Self {
-            analyzers: DashMap::new(),
-            findings: DashMap::new(),
-        }
-    }
+    pub analyzers: PersistedDashMap<Analyzer>,
+    pub findings: PersistedDashMap<Finding>,
 }
 
 // ---------------------------------------------------------------------------

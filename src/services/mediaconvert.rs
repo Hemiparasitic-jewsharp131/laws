@@ -1,10 +1,10 @@
+use crate::persistence::PersistedDashMap;
 use std::sync::Arc;
 
 use axum::extract::{Path, State};
 use axum::response::Response;
 use axum::routing::{delete, get, post};
 use axum::Json;
-use dashmap::DashMap;
 use serde_json::{json, Value};
 
 use crate::error::LawsError;
@@ -21,7 +21,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct MediaConvertQueue {
     pub name: String,
     pub arn: String,
@@ -30,7 +30,7 @@ pub struct MediaConvertQueue {
     pub created_at: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct MediaConvertJob {
     pub id: String,
     pub arn: String,
@@ -45,18 +45,10 @@ pub struct MediaConvertJob {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct MediaConvertState {
-    pub jobs: DashMap<String, MediaConvertJob>,
-    pub queues: DashMap<String, MediaConvertQueue>,
-}
-
-impl Default for MediaConvertState {
-    fn default() -> Self {
-        Self {
-            jobs: DashMap::new(),
-            queues: DashMap::new(),
-        }
-    }
+    pub jobs: PersistedDashMap<MediaConvertJob>,
+    pub queues: PersistedDashMap<MediaConvertQueue>,
 }
 
 // ---------------------------------------------------------------------------

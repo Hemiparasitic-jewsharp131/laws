@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -12,7 +12,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Terminology {
     pub name: String,
     pub arn: String,
@@ -25,16 +25,9 @@ pub struct Terminology {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct TranslateState {
-    pub terminologies: DashMap<String, Terminology>,
-}
-
-impl Default for TranslateState {
-    fn default() -> Self {
-        Self {
-            terminologies: DashMap::new(),
-        }
-    }
+    pub terminologies: PersistedDashMap<Terminology>,
 }
 
 // ---------------------------------------------------------------------------

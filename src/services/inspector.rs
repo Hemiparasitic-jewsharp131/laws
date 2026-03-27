@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -16,7 +16,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct AssessmentTemplate {
     pub arn: String,
     pub name: String,
@@ -26,7 +26,7 @@ pub struct AssessmentTemplate {
     pub created_at: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct InspectorFinding {
     pub arn: String,
     pub title: String,
@@ -40,18 +40,10 @@ pub struct InspectorFinding {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct InspectorState {
-    pub assessment_templates: DashMap<String, AssessmentTemplate>,
-    pub findings: DashMap<String, InspectorFinding>,
-}
-
-impl Default for InspectorState {
-    fn default() -> Self {
-        Self {
-            assessment_templates: DashMap::new(),
-            findings: DashMap::new(),
-        }
-    }
+    pub assessment_templates: PersistedDashMap<AssessmentTemplate>,
+    pub findings: PersistedDashMap<InspectorFinding>,
 }
 
 // ---------------------------------------------------------------------------

@@ -1,3 +1,4 @@
+use crate::persistence::PersistedDashMap;
 use std::sync::Arc;
 
 use axum::extract::{Path, State};
@@ -5,7 +6,6 @@ use axum::response::Response;
 use axum::routing::{delete, post};
 use axum::Json;
 use chrono::Utc;
-use dashmap::DashMap;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 
@@ -51,20 +51,11 @@ pub struct Dataset {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct DataBrewState {
-    pub projects: DashMap<String, BrewProject>,
-    pub recipes: DashMap<String, Recipe>,
-    pub datasets: DashMap<String, Dataset>,
-}
-
-impl Default for DataBrewState {
-    fn default() -> Self {
-        Self {
-            projects: DashMap::new(),
-            recipes: DashMap::new(),
-            datasets: DashMap::new(),
-        }
-    }
+    pub projects: PersistedDashMap<BrewProject>,
+    pub recipes: PersistedDashMap<Recipe>,
+    pub datasets: PersistedDashMap<Dataset>,
 }
 
 // ---------------------------------------------------------------------------

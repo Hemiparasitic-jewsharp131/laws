@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use rand::RngExt;
 use serde_json::{json, Value};
@@ -17,7 +17,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct OrgAccount {
     pub id: String,
     pub name: String,
@@ -27,7 +27,7 @@ pub struct OrgAccount {
     pub joined_method: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct OrganizationalUnit {
     pub id: String,
     pub name: String,
@@ -38,20 +38,11 @@ pub struct OrganizationalUnit {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct OrganizationsState {
-    pub organization: DashMap<String, Value>,
-    pub accounts: DashMap<String, OrgAccount>,
-    pub organizational_units: DashMap<String, OrganizationalUnit>,
-}
-
-impl Default for OrganizationsState {
-    fn default() -> Self {
-        Self {
-            organization: DashMap::new(),
-            accounts: DashMap::new(),
-            organizational_units: DashMap::new(),
-        }
-    }
+    pub organization: PersistedDashMap<Value>,
+    pub accounts: PersistedDashMap<OrgAccount>,
+    pub organizational_units: PersistedDashMap<OrganizationalUnit>,
 }
 
 // ---------------------------------------------------------------------------

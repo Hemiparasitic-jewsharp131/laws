@@ -1,6 +1,6 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
 use chrono::Utc;
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -17,7 +17,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct DeliveryStream {
     pub name: String,
     pub arn: String,
@@ -30,16 +30,9 @@ pub struct DeliveryStream {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct FirehoseState {
-    pub streams: DashMap<String, DeliveryStream>,
-}
-
-impl Default for FirehoseState {
-    fn default() -> Self {
-        Self {
-            streams: DashMap::new(),
-        }
-    }
+    pub streams: PersistedDashMap<DeliveryStream>,
 }
 
 // ---------------------------------------------------------------------------

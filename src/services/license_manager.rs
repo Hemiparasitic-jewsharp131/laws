@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -16,7 +16,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct License {
     pub license_arn: String,
     pub license_name: String,
@@ -27,7 +27,7 @@ pub struct License {
     pub validity_end: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct LicenseConfiguration {
     pub license_configuration_arn: String,
     pub license_configuration_id: String,
@@ -41,18 +41,10 @@ pub struct LicenseConfiguration {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct LicenseManagerState {
-    pub licenses: DashMap<String, License>,
-    pub configurations: DashMap<String, LicenseConfiguration>,
-}
-
-impl Default for LicenseManagerState {
-    fn default() -> Self {
-        Self {
-            licenses: DashMap::new(),
-            configurations: DashMap::new(),
-        }
-    }
+    pub licenses: PersistedDashMap<License>,
+    pub configurations: PersistedDashMap<LicenseConfiguration>,
 }
 
 // ---------------------------------------------------------------------------

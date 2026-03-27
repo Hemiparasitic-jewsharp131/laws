@@ -1,3 +1,4 @@
+use crate::persistence::PersistedDashMap;
 use std::sync::Arc;
 
 use axum::extract::{Path, State};
@@ -5,7 +6,6 @@ use axum::response::Response;
 use axum::routing::{get, post};
 use axum::Json;
 use chrono::Utc;
-use dashmap::DashMap;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 
@@ -48,18 +48,10 @@ pub struct SchemaMapping {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct EntityResolutionState {
-    pub workflows: DashMap<String, MatchingWorkflow>,
-    pub schema_mappings: DashMap<String, SchemaMapping>,
-}
-
-impl Default for EntityResolutionState {
-    fn default() -> Self {
-        Self {
-            workflows: DashMap::new(),
-            schema_mappings: DashMap::new(),
-        }
-    }
+    pub workflows: PersistedDashMap<MatchingWorkflow>,
+    pub schema_mappings: PersistedDashMap<SchemaMapping>,
 }
 
 // ---------------------------------------------------------------------------

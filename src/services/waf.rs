@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -16,7 +16,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct WebAcl {
     pub name: String,
     pub id: String,
@@ -26,7 +26,7 @@ pub struct WebAcl {
     pub capacity: u32,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct WafRuleGroup {
     pub name: String,
     pub id: String,
@@ -35,7 +35,7 @@ pub struct WafRuleGroup {
     pub rules: Vec<Value>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct IpSet {
     pub name: String,
     pub id: String,
@@ -48,20 +48,11 @@ pub struct IpSet {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct WafState {
-    pub web_acls: DashMap<String, WebAcl>,
-    pub rule_groups: DashMap<String, WafRuleGroup>,
-    pub ip_sets: DashMap<String, IpSet>,
-}
-
-impl Default for WafState {
-    fn default() -> Self {
-        Self {
-            web_acls: DashMap::new(),
-            rule_groups: DashMap::new(),
-            ip_sets: DashMap::new(),
-        }
-    }
+    pub web_acls: PersistedDashMap<WebAcl>,
+    pub rule_groups: PersistedDashMap<WafRuleGroup>,
+    pub ip_sets: PersistedDashMap<IpSet>,
 }
 
 // ---------------------------------------------------------------------------

@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -16,7 +16,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct AthenaWorkGroup {
     pub name: String,
     pub state: String,
@@ -24,7 +24,7 @@ pub struct AthenaWorkGroup {
     pub arn: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct QueryExecution {
     pub query_execution_id: String,
     pub query: String,
@@ -39,18 +39,10 @@ pub struct QueryExecution {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct AthenaState {
-    pub work_groups: DashMap<String, AthenaWorkGroup>,
-    pub query_executions: DashMap<String, QueryExecution>,
-}
-
-impl Default for AthenaState {
-    fn default() -> Self {
-        Self {
-            work_groups: DashMap::new(),
-            query_executions: DashMap::new(),
-        }
-    }
+    pub work_groups: PersistedDashMap<AthenaWorkGroup>,
+    pub query_executions: PersistedDashMap<QueryExecution>,
 }
 
 // ---------------------------------------------------------------------------

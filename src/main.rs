@@ -155,7 +155,7 @@ async fn main() {
     let addr = format!("{}:{}", config.host, config.port);
 
     // Handle --persist / --reset
-    if config.persist {
+    let db: Option<Arc<persistence::SqliteStore>> = if config.persist {
         let db_path = config.resolve_db_path();
         if config.reset {
             if let Err(e) = persistence::SqliteStore::reset(&db_path) {
@@ -164,11 +164,22 @@ async fn main() {
                 info!("Database reset: {db_path}");
             }
         }
-        info!("Persistence enabled: {db_path}");
-    }
+        match persistence::SqliteStore::open(&db_path) {
+            Ok(store) => {
+                info!("Persistence enabled: {db_path}");
+                Some(Arc::new(store))
+            }
+            Err(e) => {
+                tracing::error!("Failed to open database: {e} — running in-memory only");
+                None
+            }
+        }
+    } else {
+        None
+    };
 
     let dashboard_state = DashboardState::new();
-    let app = build_router(&config, dashboard_state.clone());
+    let app = build_router(&config, dashboard_state.clone(), db.clone());
 
     info!("laws v{} starting on {}", env!("CARGO_PKG_VERSION"), addr);
     info!("Region: {}, Account: {}", config.region, config.account_id);
@@ -179,7 +190,11 @@ async fn main() {
     axum::serve(listener, app).await.unwrap();
 }
 
-fn build_router(_config: &Config, dashboard_state: DashboardState) -> Router {
+fn build_router(
+    _config: &Config,
+    dashboard_state: DashboardState,
+    _db: Option<Arc<persistence::SqliteStore>>,
+) -> Router {
     // ── REST-based services (original) ──
     let s3_state = Arc::new(services::s3::S3State::new());
     let lambda_state = Arc::new(services::lambda::LambdaState::default());

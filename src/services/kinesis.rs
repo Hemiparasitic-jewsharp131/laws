@@ -1,3 +1,4 @@
+use crate::persistence::PersistedDashMap;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::Arc;
 
@@ -7,7 +8,6 @@ use axum::http::HeaderMap;
 use axum::response::Response;
 use axum::routing::post;
 use chrono::Utc;
-use dashmap::DashMap;
 use serde_json::{json, Value};
 
 use crate::error::LawsError;
@@ -17,7 +17,7 @@ use crate::protocol::json::{json_error_response, json_response, parse_target};
 // State & data model
 // ---------------------------------------------------------------------------
 
-#[derive(Clone, Debug)]
+#[derive(serde::Serialize, serde::Deserialize, Clone, Debug)]
 pub struct KinesisRecord {
     pub data: String,
     pub partition_key: String,
@@ -25,7 +25,7 @@ pub struct KinesisRecord {
     pub timestamp: f64,
 }
 
-#[derive(Clone, Debug)]
+#[derive(serde::Serialize, serde::Deserialize, Clone, Debug)]
 pub struct KinesisStream {
     pub stream_name: String,
     pub arn: String,
@@ -35,14 +35,14 @@ pub struct KinesisStream {
 }
 
 pub struct KinesisState {
-    pub streams: DashMap<String, KinesisStream>,
+    pub streams: PersistedDashMap<KinesisStream>,
     sequence_counter: AtomicU64,
 }
 
 impl Default for KinesisState {
     fn default() -> Self {
         Self {
-            streams: DashMap::new(),
+            streams: PersistedDashMap::default(),
             sequence_counter: AtomicU64::new(1),
         }
     }

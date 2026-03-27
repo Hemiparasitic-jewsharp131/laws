@@ -1,3 +1,4 @@
+use crate::persistence::PersistedDashMap;
 use std::sync::Arc;
 
 use axum::body::Bytes;
@@ -5,7 +6,6 @@ use axum::extract::State;
 use axum::http::HeaderMap;
 use axum::response::Response;
 use axum::routing::post;
-use dashmap::DashMap;
 use serde_json::{json, Value};
 
 use crate::error::LawsError;
@@ -15,19 +15,19 @@ use crate::protocol::json::{json_error_response, json_response, parse_target};
 // State & data model
 // ---------------------------------------------------------------------------
 
-#[derive(Clone, Debug)]
+#[derive(serde::Serialize, serde::Deserialize, Clone, Debug)]
 pub struct EventBus {
     pub name: String,
     pub arn: String,
 }
 
-#[derive(Clone, Debug)]
+#[derive(serde::Serialize, serde::Deserialize, Clone, Debug)]
 pub struct EventTarget {
     pub id: String,
     pub arn: String,
 }
 
-#[derive(Clone, Debug)]
+#[derive(serde::Serialize, serde::Deserialize, Clone, Debug)]
 pub struct EventRule {
     pub name: String,
     pub event_bus_name: String,
@@ -39,13 +39,13 @@ pub struct EventRule {
 }
 
 pub struct EventBridgeState {
-    pub buses: DashMap<String, EventBus>,
-    pub rules: DashMap<String, EventRule>,
+    pub buses: PersistedDashMap<EventBus>,
+    pub rules: PersistedDashMap<EventRule>,
 }
 
 impl Default for EventBridgeState {
     fn default() -> Self {
-        let buses = DashMap::new();
+        let buses = PersistedDashMap::default();
         buses.insert(
             "default".to_owned(),
             EventBus {
@@ -55,7 +55,7 @@ impl Default for EventBridgeState {
         );
         Self {
             buses,
-            rules: DashMap::new(),
+            rules: PersistedDashMap::default(),
         }
     }
 }

@@ -1,3 +1,4 @@
+use crate::persistence::PersistedDashMap;
 use std::collections::HashMap;
 use std::sync::Arc;
 
@@ -8,7 +9,6 @@ use axum::response::Response;
 use axum::routing::post;
 use axum::Router;
 use chrono::Utc;
-use dashmap::DashMap;
 
 use crate::error::LawsError;
 use crate::protocol::query::{parse_query_request, xml_error_response, xml_response_ec2};
@@ -17,7 +17,7 @@ use crate::protocol::query::{parse_query_request, xml_error_response, xml_respon
 // Domain types
 // ---------------------------------------------------------------------------
 
-#[derive(Clone, Debug)]
+#[derive(serde::Serialize, serde::Deserialize, Clone, Debug)]
 pub struct Ec2Instance {
     pub instance_id: String,
     pub image_id: String,
@@ -43,7 +43,7 @@ pub struct Ec2Instance {
     pub security_group_name: String,
 }
 
-#[derive(Clone, Debug)]
+#[derive(serde::Serialize, serde::Deserialize, Clone, Debug)]
 pub struct Ec2Reservation {
     pub reservation_id: String,
     pub owner_id: String,
@@ -56,8 +56,8 @@ pub struct Ec2Reservation {
 
 #[derive(Clone)]
 pub struct Ec2State {
-    pub instances: Arc<DashMap<String, Ec2Instance>>,
-    pub reservations: Arc<DashMap<String, Ec2Reservation>>,
+    pub instances: Arc<PersistedDashMap<Ec2Instance>>,
+    pub reservations: Arc<PersistedDashMap<Ec2Reservation>>,
     pub owner_id: String,
     pub region: String,
 }
@@ -65,8 +65,8 @@ pub struct Ec2State {
 impl Default for Ec2State {
     fn default() -> Self {
         Self {
-            instances: Arc::new(DashMap::new()),
-            reservations: Arc::new(DashMap::new()),
+            instances: Arc::new(PersistedDashMap::default()),
+            reservations: Arc::new(PersistedDashMap::default()),
             owner_id: "000000000000".to_string(),
             region: "us-east-1".to_string(),
         }
@@ -76,8 +76,8 @@ impl Default for Ec2State {
 impl Ec2State {
     pub fn new(owner_id: String, region: String) -> Self {
         Self {
-            instances: Arc::new(DashMap::new()),
-            reservations: Arc::new(DashMap::new()),
+            instances: Arc::new(PersistedDashMap::default()),
+            reservations: Arc::new(PersistedDashMap::default()),
             owner_id,
             region,
         }

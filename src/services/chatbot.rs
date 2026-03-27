@@ -1,6 +1,6 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
 use chrono::Utc;
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -17,7 +17,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct SlackChannelConfiguration {
     pub chat_configuration_arn: String,
     pub slack_team_id: String,
@@ -29,7 +29,7 @@ pub struct SlackChannelConfiguration {
     pub created_at: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct TeamsChannelConfiguration {
     pub chat_configuration_arn: String,
     pub team_id: String,
@@ -45,18 +45,10 @@ pub struct TeamsChannelConfiguration {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct ChatbotState {
-    pub slack_configs: DashMap<String, SlackChannelConfiguration>,
-    pub teams_configs: DashMap<String, TeamsChannelConfiguration>,
-}
-
-impl Default for ChatbotState {
-    fn default() -> Self {
-        Self {
-            slack_configs: DashMap::new(),
-            teams_configs: DashMap::new(),
-        }
-    }
+    pub slack_configs: PersistedDashMap<SlackChannelConfiguration>,
+    pub teams_configs: PersistedDashMap<TeamsChannelConfiguration>,
 }
 
 // ---------------------------------------------------------------------------

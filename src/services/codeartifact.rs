@@ -1,10 +1,10 @@
+use crate::persistence::PersistedDashMap;
 use std::sync::Arc;
 
 use axum::extract::{Query, State};
 use axum::response::Response;
 use axum::routing::{get, post};
 use axum::Json;
-use dashmap::DashMap;
 use serde::Deserialize;
 use serde_json::{json, Value};
 
@@ -22,7 +22,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct CodeArtifactDomain {
     pub name: String,
     pub arn: String,
@@ -31,7 +31,7 @@ pub struct CodeArtifactDomain {
     pub created: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct CodeArtifactRepository {
     pub name: String,
     pub arn: String,
@@ -44,18 +44,10 @@ pub struct CodeArtifactRepository {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct CodeArtifactState {
-    pub domains: DashMap<String, CodeArtifactDomain>,
-    pub repositories: DashMap<String, CodeArtifactRepository>,
-}
-
-impl Default for CodeArtifactState {
-    fn default() -> Self {
-        Self {
-            domains: DashMap::new(),
-            repositories: DashMap::new(),
-        }
-    }
+    pub domains: PersistedDashMap<CodeArtifactDomain>,
+    pub repositories: PersistedDashMap<CodeArtifactRepository>,
 }
 
 // ---------------------------------------------------------------------------

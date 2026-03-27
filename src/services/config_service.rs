@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -16,7 +16,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct ConfigRule {
     pub config_rule_name: String,
     pub config_rule_id: String,
@@ -26,14 +26,14 @@ pub struct ConfigRule {
     pub input_parameters: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct ConfigurationRecorder {
     pub name: String,
     pub role_arn: String,
     pub recording: bool,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct DeliveryChannel {
     pub name: String,
     pub s3_bucket_name: String,
@@ -44,20 +44,11 @@ pub struct DeliveryChannel {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct ConfigServiceState {
-    pub config_rules: DashMap<String, ConfigRule>,
-    pub configuration_recorders: DashMap<String, ConfigurationRecorder>,
-    pub delivery_channels: DashMap<String, DeliveryChannel>,
-}
-
-impl Default for ConfigServiceState {
-    fn default() -> Self {
-        Self {
-            config_rules: DashMap::new(),
-            configuration_recorders: DashMap::new(),
-            delivery_channels: DashMap::new(),
-        }
-    }
+    pub config_rules: PersistedDashMap<ConfigRule>,
+    pub configuration_recorders: PersistedDashMap<ConfigurationRecorder>,
+    pub delivery_channels: PersistedDashMap<DeliveryChannel>,
 }
 
 // ---------------------------------------------------------------------------

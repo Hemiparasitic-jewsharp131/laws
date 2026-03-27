@@ -1,9 +1,9 @@
+use crate::persistence::PersistedDashMap;
 use std::sync::Arc;
 
 use axum::extract::{Path, State};
 use axum::response::Response;
 use axum::Json;
-use dashmap::DashMap;
 use serde_json::{json, Value};
 
 use crate::error::LawsError;
@@ -20,7 +20,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Workspace {
     pub id: String,
     pub arn: String,
@@ -37,16 +37,9 @@ pub struct Workspace {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct ManagedGrafanaState {
-    pub workspaces: DashMap<String, Workspace>,
-}
-
-impl Default for ManagedGrafanaState {
-    fn default() -> Self {
-        Self {
-            workspaces: DashMap::new(),
-        }
-    }
+    pub workspaces: PersistedDashMap<Workspace>,
 }
 
 // ---------------------------------------------------------------------------

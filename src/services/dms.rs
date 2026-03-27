@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -16,7 +16,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct ReplicationInstance {
     pub identifier: String,
     pub arn: String,
@@ -26,7 +26,7 @@ pub struct ReplicationInstance {
     pub allocated_storage: u32,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Endpoint {
     pub identifier: String,
     pub arn: String,
@@ -38,7 +38,7 @@ pub struct Endpoint {
     pub status: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct ReplicationTask {
     pub identifier: String,
     pub arn: String,
@@ -54,20 +54,11 @@ pub struct ReplicationTask {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct DmsState {
-    pub replication_instances: DashMap<String, ReplicationInstance>,
-    pub endpoints: DashMap<String, Endpoint>,
-    pub tasks: DashMap<String, ReplicationTask>,
-}
-
-impl Default for DmsState {
-    fn default() -> Self {
-        Self {
-            replication_instances: DashMap::new(),
-            endpoints: DashMap::new(),
-            tasks: DashMap::new(),
-        }
-    }
+    pub replication_instances: PersistedDashMap<ReplicationInstance>,
+    pub endpoints: PersistedDashMap<Endpoint>,
+    pub tasks: PersistedDashMap<ReplicationTask>,
 }
 
 // ---------------------------------------------------------------------------

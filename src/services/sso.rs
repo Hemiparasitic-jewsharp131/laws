@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -12,7 +12,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct PermissionSet {
     pub permission_set_arn: String,
     pub name: String,
@@ -21,7 +21,7 @@ pub struct PermissionSet {
     pub created_date: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct AccountAssignment {
     pub permission_set_arn: String,
     pub principal_id: String,
@@ -34,18 +34,10 @@ pub struct AccountAssignment {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct SsoState {
-    pub permission_sets: DashMap<String, PermissionSet>,
-    pub account_assignments: DashMap<String, AccountAssignment>,
-}
-
-impl Default for SsoState {
-    fn default() -> Self {
-        Self {
-            permission_sets: DashMap::new(),
-            account_assignments: DashMap::new(),
-        }
-    }
+    pub permission_sets: PersistedDashMap<PermissionSet>,
+    pub account_assignments: PersistedDashMap<AccountAssignment>,
 }
 
 // ---------------------------------------------------------------------------

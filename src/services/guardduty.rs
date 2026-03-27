@@ -1,9 +1,9 @@
+use crate::persistence::PersistedDashMap;
 use std::sync::Arc;
 
 use axum::extract::{Path, State};
 use axum::response::Response;
 use axum::Json;
-use dashmap::DashMap;
 use serde_json::{json, Value};
 
 use crate::error::LawsError;
@@ -20,7 +20,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Detector {
     pub detector_id: String,
     pub status: String,
@@ -30,7 +30,7 @@ pub struct Detector {
     pub findings: Vec<Finding>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Finding {
     pub finding_id: String,
     pub detector_id: String,
@@ -45,16 +45,9 @@ pub struct Finding {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct GuardDutyState {
-    pub detectors: DashMap<String, Detector>,
-}
-
-impl Default for GuardDutyState {
-    fn default() -> Self {
-        Self {
-            detectors: DashMap::new(),
-        }
-    }
+    pub detectors: PersistedDashMap<Detector>,
 }
 
 // ---------------------------------------------------------------------------

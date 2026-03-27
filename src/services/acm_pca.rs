@@ -1,3 +1,4 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
 use dashmap::DashMap;
 use http::StatusCode;
@@ -16,17 +17,18 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct CertificateAuthority {
     pub arn: String,
     pub ca_type: String,
     pub status: String,
     pub subject: Value,
     pub created_at: String,
+    #[serde(skip)]
     pub certificates: DashMap<String, Certificate>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Certificate {
     pub arn: String,
     pub ca_arn: String,
@@ -38,16 +40,9 @@ pub struct Certificate {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct AcmPcaState {
-    pub certificate_authorities: DashMap<String, CertificateAuthority>,
-}
-
-impl Default for AcmPcaState {
-    fn default() -> Self {
-        Self {
-            certificate_authorities: DashMap::new(),
-        }
-    }
+    pub certificate_authorities: PersistedDashMap<CertificateAuthority>,
 }
 
 // ---------------------------------------------------------------------------

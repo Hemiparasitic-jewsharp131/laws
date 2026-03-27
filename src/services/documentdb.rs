@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -16,7 +16,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct DbCluster {
     pub cluster_identifier: String,
     pub arn: String,
@@ -28,7 +28,7 @@ pub struct DbCluster {
     pub master_username: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct DbInstance {
     pub instance_identifier: String,
     pub arn: String,
@@ -43,18 +43,10 @@ pub struct DbInstance {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct DocumentDbState {
-    pub clusters: DashMap<String, DbCluster>,
-    pub instances: DashMap<String, DbInstance>,
-}
-
-impl Default for DocumentDbState {
-    fn default() -> Self {
-        Self {
-            clusters: DashMap::new(),
-            instances: DashMap::new(),
-        }
-    }
+    pub clusters: PersistedDashMap<DbCluster>,
+    pub instances: PersistedDashMap<DbInstance>,
 }
 
 // ---------------------------------------------------------------------------

@@ -1,10 +1,10 @@
+use crate::persistence::PersistedDashMap;
 use std::sync::Arc;
 
 use axum::extract::{Path, State};
 use axum::response::Response;
 use axum::routing::{delete, get, put};
 use axum::Json;
-use dashmap::DashMap;
 use serde_json::{json, Value};
 
 use crate::error::LawsError;
@@ -21,7 +21,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct BackupVault {
     pub name: String,
     pub arn: String,
@@ -29,7 +29,7 @@ pub struct BackupVault {
     pub number_of_recovery_points: u64,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct BackupPlan {
     pub plan_id: String,
     pub plan_name: String,
@@ -42,18 +42,10 @@ pub struct BackupPlan {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct BackupState {
-    pub vaults: DashMap<String, BackupVault>,
-    pub plans: DashMap<String, BackupPlan>,
-}
-
-impl Default for BackupState {
-    fn default() -> Self {
-        Self {
-            vaults: DashMap::new(),
-            plans: DashMap::new(),
-        }
-    }
+    pub vaults: PersistedDashMap<BackupVault>,
+    pub plans: PersistedDashMap<BackupPlan>,
 }
 
 // ---------------------------------------------------------------------------

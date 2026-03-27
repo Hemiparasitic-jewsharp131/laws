@@ -1,3 +1,4 @@
+use crate::persistence::PersistedDashMap;
 use std::sync::Arc;
 
 use axum::extract::{Path, State};
@@ -5,7 +6,6 @@ use axum::response::Response;
 use axum::routing::{get, post};
 use axum::Json;
 use chrono::Utc;
-use dashmap::DashMap;
 use serde::Deserialize;
 use serde_json::{json, Value};
 
@@ -23,7 +23,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Workload {
     pub workload_id: String,
     pub workload_name: String,
@@ -37,7 +37,7 @@ pub struct Workload {
     pub lens_shares: Vec<LensShare>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct LensReview {
     pub lens_alias: String,
     pub lens_arn: String,
@@ -45,7 +45,7 @@ pub struct LensReview {
     pub updated_at: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct LensShare {
     pub share_id: String,
     pub shared_with: String,
@@ -56,16 +56,9 @@ pub struct LensShare {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct WellArchitectedState {
-    pub workloads: DashMap<String, Workload>,
-}
-
-impl Default for WellArchitectedState {
-    fn default() -> Self {
-        Self {
-            workloads: DashMap::new(),
-        }
-    }
+    pub workloads: PersistedDashMap<Workload>,
 }
 
 // ---------------------------------------------------------------------------

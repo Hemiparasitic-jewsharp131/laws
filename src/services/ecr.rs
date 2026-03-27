@@ -1,6 +1,6 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
 use base64::Engine;
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -17,7 +17,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct EcrRepository {
     pub repository_name: String,
     pub registry_id: String,
@@ -26,7 +26,7 @@ pub struct EcrRepository {
     pub created_at: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct EcrImage {
     pub image_digest: String,
     pub image_tag: Option<String>,
@@ -37,18 +37,10 @@ pub struct EcrImage {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct EcrState {
-    pub repositories: DashMap<String, EcrRepository>,
-    pub images: DashMap<String, Vec<EcrImage>>,
-}
-
-impl Default for EcrState {
-    fn default() -> Self {
-        Self {
-            repositories: DashMap::new(),
-            images: DashMap::new(),
-        }
-    }
+    pub repositories: PersistedDashMap<EcrRepository>,
+    pub images: PersistedDashMap<Vec<EcrImage>>,
 }
 
 // ---------------------------------------------------------------------------

@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -16,7 +16,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct FsxFileSystem {
     pub file_system_id: String,
     pub arn: String,
@@ -27,7 +27,7 @@ pub struct FsxFileSystem {
     pub created_at: f64,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct FsxBackup {
     pub backup_id: String,
     pub arn: String,
@@ -41,18 +41,10 @@ pub struct FsxBackup {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct FsxState {
-    pub file_systems: DashMap<String, FsxFileSystem>,
-    pub backups: DashMap<String, FsxBackup>,
-}
-
-impl Default for FsxState {
-    fn default() -> Self {
-        Self {
-            file_systems: DashMap::new(),
-            backups: DashMap::new(),
-        }
-    }
+    pub file_systems: PersistedDashMap<FsxFileSystem>,
+    pub backups: PersistedDashMap<FsxBackup>,
 }
 
 // ---------------------------------------------------------------------------

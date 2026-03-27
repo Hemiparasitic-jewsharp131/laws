@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use std::sync::Arc;
 
@@ -9,7 +9,7 @@ use crate::error::LawsError;
 // Domain types
 // ---------------------------------------------------------------------------
 
-#[derive(Clone, Debug)]
+#[derive(serde::Serialize, serde::Deserialize, Clone, Debug)]
 pub struct AcmCertificate {
     pub arn: String,
     pub domain_name: String,
@@ -24,13 +24,13 @@ pub struct AcmCertificate {
 // ---------------------------------------------------------------------------
 
 pub struct AcmState {
-    pub certificates: Arc<DashMap<String, AcmCertificate>>,
+    pub certificates: Arc<PersistedDashMap<AcmCertificate>>,
 }
 
 impl Default for AcmState {
     fn default() -> Self {
         Self {
-            certificates: Arc::new(DashMap::new()),
+            certificates: Arc::new(PersistedDashMap::default()),
         }
     }
 }

@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -16,7 +16,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct SnowballJob {
     pub job_id: String,
     pub job_type: String,
@@ -29,7 +29,7 @@ pub struct SnowballJob {
     pub created_at: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct SnowballCluster {
     pub cluster_id: String,
     pub cluster_state: String,
@@ -44,18 +44,10 @@ pub struct SnowballCluster {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct SnowballState {
-    pub jobs: DashMap<String, SnowballJob>,
-    pub clusters: DashMap<String, SnowballCluster>,
-}
-
-impl Default for SnowballState {
-    fn default() -> Self {
-        Self {
-            jobs: DashMap::new(),
-            clusters: DashMap::new(),
-        }
-    }
+    pub jobs: PersistedDashMap<SnowballJob>,
+    pub clusters: PersistedDashMap<SnowballCluster>,
 }
 
 // ---------------------------------------------------------------------------

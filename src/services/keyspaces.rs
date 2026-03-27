@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -16,13 +16,13 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Keyspace {
     pub keyspace_name: String,
     pub resource_arn: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct KeyspacesTable {
     pub keyspace_name: String,
     pub table_name: String,
@@ -34,18 +34,10 @@ pub struct KeyspacesTable {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct KeyspacesState {
-    pub keyspaces: DashMap<String, Keyspace>,
-    pub tables: DashMap<String, KeyspacesTable>,
-}
-
-impl Default for KeyspacesState {
-    fn default() -> Self {
-        Self {
-            keyspaces: DashMap::new(),
-            tables: DashMap::new(),
-        }
-    }
+    pub keyspaces: PersistedDashMap<Keyspace>,
+    pub tables: PersistedDashMap<KeyspacesTable>,
 }
 
 // ---------------------------------------------------------------------------

@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -12,7 +12,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct EnvironmentTemplate {
     pub arn: String,
     pub name: String,
@@ -21,7 +21,7 @@ pub struct EnvironmentTemplate {
     pub created_at: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct ProtonService {
     pub arn: String,
     pub name: String,
@@ -35,18 +35,10 @@ pub struct ProtonService {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct ProtonState {
-    pub environments: DashMap<String, EnvironmentTemplate>,
-    pub services: DashMap<String, ProtonService>,
-}
-
-impl Default for ProtonState {
-    fn default() -> Self {
-        Self {
-            environments: DashMap::new(),
-            services: DashMap::new(),
-        }
-    }
+    pub environments: PersistedDashMap<EnvironmentTemplate>,
+    pub services: PersistedDashMap<ProtonService>,
 }
 
 // ---------------------------------------------------------------------------

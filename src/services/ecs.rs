@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -16,14 +16,14 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct EcsCluster {
     pub cluster_name: String,
     pub arn: String,
     pub status: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct EcsTaskDefinition {
     pub family: String,
     pub revision: u32,
@@ -32,7 +32,7 @@ pub struct EcsTaskDefinition {
     pub status: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct EcsTask {
     pub task_arn: String,
     pub cluster_arn: String,
@@ -46,14 +46,14 @@ pub struct EcsTask {
 // ---------------------------------------------------------------------------
 
 pub struct EcsState {
-    pub clusters: DashMap<String, EcsCluster>,
-    pub task_definitions: DashMap<String, EcsTaskDefinition>,
-    pub tasks: DashMap<String, EcsTask>,
+    pub clusters: PersistedDashMap<EcsCluster>,
+    pub task_definitions: PersistedDashMap<EcsTaskDefinition>,
+    pub tasks: PersistedDashMap<EcsTask>,
 }
 
 impl Default for EcsState {
     fn default() -> Self {
-        let clusters = DashMap::new();
+        let clusters = PersistedDashMap::default();
 
         // Create default cluster
         let default_arn = format!("arn:aws:ecs:{REGION}:{ACCOUNT_ID}:cluster/default");
@@ -68,8 +68,8 @@ impl Default for EcsState {
 
         Self {
             clusters,
-            task_definitions: DashMap::new(),
-            tasks: DashMap::new(),
+            task_definitions: PersistedDashMap::default(),
+            tasks: PersistedDashMap::default(),
         }
     }
 }

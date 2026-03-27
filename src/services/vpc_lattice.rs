@@ -1,3 +1,4 @@
+use crate::persistence::PersistedDashMap;
 use std::sync::Arc;
 
 use axum::extract::{Path, State};
@@ -5,7 +6,6 @@ use axum::response::Response;
 use axum::routing::{get, post};
 use axum::Json;
 use chrono::Utc;
-use dashmap::DashMap;
 use serde::Deserialize;
 use serde_json::{json, Value};
 
@@ -23,7 +23,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct LatticeService {
     pub id: String,
     pub name: String,
@@ -33,7 +33,7 @@ pub struct LatticeService {
     pub dns_entry: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct TargetGroup {
     pub id: String,
     pub name: String,
@@ -44,7 +44,7 @@ pub struct TargetGroup {
     pub targets: Vec<Target>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Target {
     pub id: String,
     pub port: u16,
@@ -54,18 +54,10 @@ pub struct Target {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct VpcLatticeState {
-    pub services: DashMap<String, LatticeService>,
-    pub target_groups: DashMap<String, TargetGroup>,
-}
-
-impl Default for VpcLatticeState {
-    fn default() -> Self {
-        Self {
-            services: DashMap::new(),
-            target_groups: DashMap::new(),
-        }
-    }
+    pub services: PersistedDashMap<LatticeService>,
+    pub target_groups: PersistedDashMap<TargetGroup>,
 }
 
 // ---------------------------------------------------------------------------

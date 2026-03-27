@@ -1,3 +1,4 @@
+use crate::persistence::PersistedDashMap;
 use std::collections::HashMap;
 use std::sync::Arc;
 
@@ -6,7 +7,6 @@ use axum::response::Response;
 use axum::routing::{get, post, put};
 use axum::Json;
 use chrono::Utc;
-use dashmap::DashMap;
 use serde_json::{json, Value};
 
 use crate::error::LawsError;
@@ -15,7 +15,7 @@ use crate::protocol::rest_json;
 const ACCOUNT_ID: &str = "000000000000";
 const REGION: &str = "us-east-1";
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Snapshot {
     pub snapshot_id: String,
     pub volume_size: i64,
@@ -25,16 +25,9 @@ pub struct Snapshot {
     pub created_at: String,
 }
 
+#[derive(Default)]
 pub struct EbsState {
-    pub snapshots: DashMap<String, Snapshot>,
-}
-
-impl Default for EbsState {
-    fn default() -> Self {
-        Self {
-            snapshots: DashMap::new(),
-        }
-    }
+    pub snapshots: PersistedDashMap<Snapshot>,
 }
 
 pub fn router(state: Arc<EbsState>) -> axum::Router {

@@ -1,9 +1,9 @@
+use crate::persistence::PersistedDashMap;
 use std::sync::Arc;
 
 use axum::extract::{Path, State};
 use axum::response::Response;
 use axum::Json;
-use dashmap::DashMap;
 use serde_json::{json, Value};
 
 use crate::error::LawsError;
@@ -20,7 +20,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Image {
     pub arn: String,
     pub name: String,
@@ -30,7 +30,7 @@ pub struct Image {
     pub created_at: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Component {
     pub arn: String,
     pub name: String,
@@ -40,7 +40,7 @@ pub struct Component {
     pub created_at: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct ImagePipeline {
     pub arn: String,
     pub name: String,
@@ -53,20 +53,11 @@ pub struct ImagePipeline {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct ImageBuilderState {
-    pub images: DashMap<String, Image>,
-    pub components: DashMap<String, Component>,
-    pub pipelines: DashMap<String, ImagePipeline>,
-}
-
-impl Default for ImageBuilderState {
-    fn default() -> Self {
-        Self {
-            images: DashMap::new(),
-            components: DashMap::new(),
-            pipelines: DashMap::new(),
-        }
-    }
+    pub images: PersistedDashMap<Image>,
+    pub components: PersistedDashMap<Component>,
+    pub pipelines: PersistedDashMap<ImagePipeline>,
 }
 
 // ---------------------------------------------------------------------------

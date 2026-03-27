@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -16,7 +16,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct EmrCluster {
     pub cluster_id: String,
     pub name: String,
@@ -28,7 +28,7 @@ pub struct EmrCluster {
     pub steps: Vec<EmrStep>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct EmrStep {
     pub step_id: String,
     pub name: String,
@@ -42,16 +42,9 @@ pub struct EmrStep {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct EmrState {
-    pub clusters: DashMap<String, EmrCluster>,
-}
-
-impl Default for EmrState {
-    fn default() -> Self {
-        Self {
-            clusters: DashMap::new(),
-        }
-    }
+    pub clusters: PersistedDashMap<EmrCluster>,
 }
 
 // ---------------------------------------------------------------------------

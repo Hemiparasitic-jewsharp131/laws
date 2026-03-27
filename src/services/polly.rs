@@ -1,10 +1,10 @@
+use crate::persistence::PersistedDashMap;
 use std::sync::Arc;
 
 use axum::extract::{Path, State};
 use axum::response::{IntoResponse, Response};
 use axum::routing::{get, post, put};
 use axum::Json;
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -22,7 +22,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct PollyLexicon {
     pub name: String,
     pub arn: String,
@@ -38,16 +38,9 @@ pub struct PollyLexicon {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct PollyState {
-    pub lexicons: DashMap<String, PollyLexicon>,
-}
-
-impl Default for PollyState {
-    fn default() -> Self {
-        Self {
-            lexicons: DashMap::new(),
-        }
-    }
+    pub lexicons: PersistedDashMap<PollyLexicon>,
 }
 
 // ---------------------------------------------------------------------------

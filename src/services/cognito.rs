@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use rand::distr::Alphanumeric;
 use rand::RngExt;
@@ -18,7 +18,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct UserPool {
     pub id: String,
     pub name: String,
@@ -27,14 +27,14 @@ pub struct UserPool {
     pub creation_date: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct UserPoolClient {
     pub client_id: String,
     pub client_name: String,
     pub user_pool_id: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct CognitoUser {
     pub username: String,
     pub user_pool_id: String,
@@ -47,20 +47,11 @@ pub struct CognitoUser {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct CognitoState {
-    pub user_pools: DashMap<String, UserPool>,
-    pub user_pool_clients: DashMap<String, UserPoolClient>,
-    pub users: DashMap<String, CognitoUser>,
-}
-
-impl Default for CognitoState {
-    fn default() -> Self {
-        Self {
-            user_pools: DashMap::new(),
-            user_pool_clients: DashMap::new(),
-            users: DashMap::new(),
-        }
-    }
+    pub user_pools: PersistedDashMap<UserPool>,
+    pub user_pool_clients: PersistedDashMap<UserPoolClient>,
+    pub users: PersistedDashMap<CognitoUser>,
 }
 
 // ---------------------------------------------------------------------------

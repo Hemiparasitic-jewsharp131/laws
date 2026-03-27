@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -16,7 +16,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Accelerator {
     pub accelerator_arn: String,
     pub name: String,
@@ -27,7 +27,7 @@ pub struct Accelerator {
     pub created_at: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Listener {
     pub listener_arn: String,
     pub accelerator_arn: String,
@@ -36,7 +36,7 @@ pub struct Listener {
     pub to_port: u16,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct EndpointGroup {
     pub endpoint_group_arn: String,
     pub listener_arn: String,
@@ -48,20 +48,11 @@ pub struct EndpointGroup {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct GlobalAcceleratorState {
-    pub accelerators: DashMap<String, Accelerator>,
-    pub listeners: DashMap<String, Listener>,
-    pub endpoint_groups: DashMap<String, EndpointGroup>,
-}
-
-impl Default for GlobalAcceleratorState {
-    fn default() -> Self {
-        Self {
-            accelerators: DashMap::new(),
-            listeners: DashMap::new(),
-            endpoint_groups: DashMap::new(),
-        }
-    }
+    pub accelerators: PersistedDashMap<Accelerator>,
+    pub listeners: PersistedDashMap<Listener>,
+    pub endpoint_groups: PersistedDashMap<EndpointGroup>,
 }
 
 // ---------------------------------------------------------------------------

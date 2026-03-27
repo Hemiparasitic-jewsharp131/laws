@@ -1,3 +1,4 @@
+use crate::persistence::PersistedDashMap;
 use std::collections::HashMap;
 use std::sync::Arc;
 
@@ -6,7 +7,6 @@ use axum::response::Response;
 use axum::routing::{get, put};
 use axum::Json;
 use chrono::Utc;
-use dashmap::DashMap;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 
@@ -61,22 +61,12 @@ pub struct ApiStage {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct ApiGatewayState {
-    pub apis: DashMap<String, RestApi>,
-    pub resources: DashMap<String, ApiResource>,
-    pub deployments: DashMap<String, ApiDeployment>,
-    pub stages: DashMap<String, ApiStage>,
-}
-
-impl Default for ApiGatewayState {
-    fn default() -> Self {
-        Self {
-            apis: DashMap::new(),
-            resources: DashMap::new(),
-            deployments: DashMap::new(),
-            stages: DashMap::new(),
-        }
-    }
+    pub apis: PersistedDashMap<RestApi>,
+    pub resources: PersistedDashMap<ApiResource>,
+    pub deployments: PersistedDashMap<ApiDeployment>,
+    pub stages: PersistedDashMap<ApiStage>,
 }
 
 // ---------------------------------------------------------------------------

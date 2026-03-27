@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -16,7 +16,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct TimestreamDatabase {
     pub database_name: String,
     pub arn: String,
@@ -24,7 +24,7 @@ pub struct TimestreamDatabase {
     pub creation_time: f64,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct TimestreamTable {
     pub database_name: String,
     pub table_name: String,
@@ -33,7 +33,7 @@ pub struct TimestreamTable {
     pub creation_time: f64,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct RetentionProperties {
     pub memory_store_retention_period_in_hours: u64,
     pub magnetic_store_retention_period_in_days: u64,
@@ -43,18 +43,10 @@ pub struct RetentionProperties {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct TimestreamState {
-    pub databases: DashMap<String, TimestreamDatabase>,
-    pub tables: DashMap<String, TimestreamTable>,
-}
-
-impl Default for TimestreamState {
-    fn default() -> Self {
-        Self {
-            databases: DashMap::new(),
-            tables: DashMap::new(),
-        }
-    }
+    pub databases: PersistedDashMap<TimestreamDatabase>,
+    pub tables: PersistedDashMap<TimestreamTable>,
 }
 
 // ---------------------------------------------------------------------------

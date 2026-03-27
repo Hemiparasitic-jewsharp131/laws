@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -15,7 +15,7 @@ const ACCOUNT_ID: &str = "000000000000";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Budget {
     pub budget_name: String,
     pub budget_type: String,
@@ -25,7 +25,7 @@ pub struct Budget {
     pub created_at: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Notification {
     pub notification_type: String,
     pub comparison_operator: String,
@@ -37,16 +37,9 @@ pub struct Notification {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct BudgetsState {
-    pub budgets: DashMap<String, Budget>,
-}
-
-impl Default for BudgetsState {
-    fn default() -> Self {
-        Self {
-            budgets: DashMap::new(),
-        }
-    }
+    pub budgets: PersistedDashMap<Budget>,
 }
 
 // ---------------------------------------------------------------------------

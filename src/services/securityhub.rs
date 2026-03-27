@@ -1,10 +1,10 @@
+use crate::persistence::PersistedDashMap;
 use std::sync::Arc;
 
 use axum::extract::State;
 use axum::response::Response;
 use axum::routing::post;
 use axum::Json;
-use dashmap::DashMap;
 use serde_json::{json, Value};
 
 use crate::error::LawsError;
@@ -21,7 +21,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct SecurityHubFinding {
     pub id: String,
     pub title: String,
@@ -36,18 +36,10 @@ pub struct SecurityHubFinding {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct SecurityHubState {
-    pub hub_enabled: DashMap<String, bool>,
-    pub findings: DashMap<String, SecurityHubFinding>,
-}
-
-impl Default for SecurityHubState {
-    fn default() -> Self {
-        Self {
-            hub_enabled: DashMap::new(),
-            findings: DashMap::new(),
-        }
-    }
+    pub hub_enabled: PersistedDashMap<bool>,
+    pub findings: PersistedDashMap<SecurityHubFinding>,
 }
 
 // ---------------------------------------------------------------------------

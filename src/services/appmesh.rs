@@ -1,3 +1,4 @@
+use crate::persistence::PersistedDashMap;
 use std::sync::Arc;
 
 use axum::extract::{Path, State};
@@ -5,7 +6,6 @@ use axum::response::Response;
 use axum::routing::{get, post};
 use axum::Json;
 use chrono::Utc;
-use dashmap::DashMap;
 use serde::Deserialize;
 use serde_json::{json, Value};
 
@@ -23,7 +23,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Mesh {
     pub mesh_name: String,
     pub arn: String,
@@ -33,7 +33,7 @@ pub struct Mesh {
     pub spec: Value,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct VirtualNode {
     pub mesh_name: String,
     pub virtual_node_name: String,
@@ -43,7 +43,7 @@ pub struct VirtualNode {
     pub spec: Value,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct VirtualService {
     pub mesh_name: String,
     pub virtual_service_name: String,
@@ -57,18 +57,10 @@ pub struct VirtualService {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct AppMeshState {
-    pub meshes: DashMap<String, Mesh>,
-    pub virtual_nodes: DashMap<String, VirtualNode>,
-}
-
-impl Default for AppMeshState {
-    fn default() -> Self {
-        Self {
-            meshes: DashMap::new(),
-            virtual_nodes: DashMap::new(),
-        }
-    }
+    pub meshes: PersistedDashMap<Mesh>,
+    pub virtual_nodes: PersistedDashMap<VirtualNode>,
 }
 
 // ---------------------------------------------------------------------------

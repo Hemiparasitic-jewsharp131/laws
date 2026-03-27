@@ -1,3 +1,4 @@
+use crate::persistence::PersistedDashMap;
 use std::sync::Arc;
 
 use axum::extract::{Path, State};
@@ -5,7 +6,6 @@ use axum::response::Response;
 use axum::routing::{get, post};
 use axum::Json;
 use chrono::Utc;
-use dashmap::DashMap;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 
@@ -46,18 +46,10 @@ pub struct DataZoneProject {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct DataZoneState {
-    pub domains: DashMap<String, DataZoneDomain>,
-    pub projects: DashMap<String, DataZoneProject>,
-}
-
-impl Default for DataZoneState {
-    fn default() -> Self {
-        Self {
-            domains: DashMap::new(),
-            projects: DashMap::new(),
-        }
-    }
+    pub domains: PersistedDashMap<DataZoneDomain>,
+    pub projects: PersistedDashMap<DataZoneProject>,
 }
 
 // ---------------------------------------------------------------------------

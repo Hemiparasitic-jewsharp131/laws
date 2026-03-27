@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use std::sync::Arc;
 
@@ -11,7 +11,7 @@ use crate::error::LawsError;
 // Domain types
 // ---------------------------------------------------------------------------
 
-#[derive(Clone, Debug)]
+#[derive(serde::Serialize, serde::Deserialize, Clone, Debug)]
 pub struct KmsKey {
     pub key_id: String,
     pub arn: String,
@@ -23,7 +23,7 @@ pub struct KmsKey {
     pub enabled: bool,
 }
 
-#[derive(Clone, Debug)]
+#[derive(serde::Serialize, serde::Deserialize, Clone, Debug)]
 pub struct KmsAlias {
     pub alias_name: String,
     pub alias_arn: String,
@@ -35,15 +35,15 @@ pub struct KmsAlias {
 // ---------------------------------------------------------------------------
 
 pub struct KmsState {
-    pub keys: Arc<DashMap<String, KmsKey>>,
-    pub aliases: Arc<DashMap<String, KmsAlias>>,
+    pub keys: Arc<PersistedDashMap<KmsKey>>,
+    pub aliases: Arc<PersistedDashMap<KmsAlias>>,
 }
 
 impl Default for KmsState {
     fn default() -> Self {
         Self {
-            keys: Arc::new(DashMap::new()),
-            aliases: Arc::new(DashMap::new()),
+            keys: Arc::new(PersistedDashMap::default()),
+            aliases: Arc::new(PersistedDashMap::default()),
         }
     }
 }

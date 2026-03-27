@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -16,7 +16,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct AppRunnerService {
     pub service_name: String,
     pub service_id: String,
@@ -31,16 +31,9 @@ pub struct AppRunnerService {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct AppRunnerState {
-    pub services: DashMap<String, AppRunnerService>,
-}
-
-impl Default for AppRunnerState {
-    fn default() -> Self {
-        Self {
-            services: DashMap::new(),
-        }
-    }
+    pub services: PersistedDashMap<AppRunnerService>,
 }
 
 // ---------------------------------------------------------------------------

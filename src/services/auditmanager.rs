@@ -1,3 +1,4 @@
+use crate::persistence::PersistedDashMap;
 use std::sync::Arc;
 
 use axum::extract::{Path, State};
@@ -5,7 +6,6 @@ use axum::response::Response;
 use axum::routing::{get, post};
 use axum::Json;
 use chrono::Utc;
-use dashmap::DashMap;
 use serde::Deserialize;
 use serde_json::{json, Value};
 
@@ -23,7 +23,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Assessment {
     pub id: String,
     pub arn: String,
@@ -34,7 +34,7 @@ pub struct Assessment {
     pub created_at: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Control {
     pub id: String,
     pub arn: String,
@@ -48,18 +48,10 @@ pub struct Control {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct AuditManagerState {
-    pub assessments: DashMap<String, Assessment>,
-    pub controls: DashMap<String, Control>,
-}
-
-impl Default for AuditManagerState {
-    fn default() -> Self {
-        Self {
-            assessments: DashMap::new(),
-            controls: DashMap::new(),
-        }
-    }
+    pub assessments: PersistedDashMap<Assessment>,
+    pub controls: PersistedDashMap<Control>,
 }
 
 // ---------------------------------------------------------------------------

@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -12,7 +12,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct ResourceShare {
     pub resource_share_arn: String,
     pub name: String,
@@ -26,16 +26,9 @@ pub struct ResourceShare {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct RamState {
-    pub resource_shares: DashMap<String, ResourceShare>,
-}
-
-impl Default for RamState {
-    fn default() -> Self {
-        Self {
-            resource_shares: DashMap::new(),
-        }
-    }
+    pub resource_shares: PersistedDashMap<ResourceShare>,
 }
 
 // ---------------------------------------------------------------------------

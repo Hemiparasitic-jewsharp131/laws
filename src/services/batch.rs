@@ -1,10 +1,10 @@
+use crate::persistence::PersistedDashMap;
 use std::sync::Arc;
 
 use axum::extract::State;
 use axum::response::Response;
 use axum::routing::post;
 use axum::Json;
-use dashmap::DashMap;
 use serde_json::{json, Value};
 
 use crate::error::LawsError;
@@ -21,7 +21,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct ComputeEnvironment {
     pub name: String,
     pub arn: String,
@@ -30,7 +30,7 @@ pub struct ComputeEnvironment {
     pub status: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct JobQueue {
     pub name: String,
     pub arn: String,
@@ -39,7 +39,7 @@ pub struct JobQueue {
     pub compute_environments: Vec<String>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct BatchJob {
     pub job_id: String,
     pub job_name: String,
@@ -52,20 +52,11 @@ pub struct BatchJob {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct BatchState {
-    pub compute_environments: DashMap<String, ComputeEnvironment>,
-    pub job_queues: DashMap<String, JobQueue>,
-    pub jobs: DashMap<String, BatchJob>,
-}
-
-impl Default for BatchState {
-    fn default() -> Self {
-        Self {
-            compute_environments: DashMap::new(),
-            job_queues: DashMap::new(),
-            jobs: DashMap::new(),
-        }
-    }
+    pub compute_environments: PersistedDashMap<ComputeEnvironment>,
+    pub job_queues: PersistedDashMap<JobQueue>,
+    pub jobs: PersistedDashMap<BatchJob>,
 }
 
 // ---------------------------------------------------------------------------

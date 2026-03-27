@@ -1,6 +1,6 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
 use chrono::Utc;
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -17,7 +17,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Organization {
     pub organization_id: String,
     pub alias: String,
@@ -27,7 +27,7 @@ pub struct Organization {
     pub created_at: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct WorkMailUser {
     pub user_id: String,
     pub organization_id: String,
@@ -42,18 +42,10 @@ pub struct WorkMailUser {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct WorkMailState {
-    pub organizations: DashMap<String, Organization>,
-    pub users: DashMap<String, WorkMailUser>,
-}
-
-impl Default for WorkMailState {
-    fn default() -> Self {
-        Self {
-            organizations: DashMap::new(),
-            users: DashMap::new(),
-        }
-    }
+    pub organizations: PersistedDashMap<Organization>,
+    pub users: PersistedDashMap<WorkMailUser>,
 }
 
 // ---------------------------------------------------------------------------

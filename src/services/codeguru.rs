@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -16,7 +16,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct ProfilingGroup {
     pub name: String,
     pub arn: String,
@@ -30,16 +30,9 @@ pub struct ProfilingGroup {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct CodeGuruState {
-    pub profiling_groups: DashMap<String, ProfilingGroup>,
-}
-
-impl Default for CodeGuruState {
-    fn default() -> Self {
-        Self {
-            profiling_groups: DashMap::new(),
-        }
-    }
+    pub profiling_groups: PersistedDashMap<ProfilingGroup>,
 }
 
 // ---------------------------------------------------------------------------

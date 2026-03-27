@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -12,7 +12,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct PersonalizeDataset {
     pub dataset_arn: String,
     pub name: String,
@@ -20,7 +20,7 @@ pub struct PersonalizeDataset {
     pub status: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Solution {
     pub solution_arn: String,
     pub name: String,
@@ -28,7 +28,7 @@ pub struct Solution {
     pub status: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Campaign {
     pub campaign_arn: String,
     pub name: String,
@@ -40,20 +40,11 @@ pub struct Campaign {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct PersonalizeState {
-    pub datasets: DashMap<String, PersonalizeDataset>,
-    pub solutions: DashMap<String, Solution>,
-    pub campaigns: DashMap<String, Campaign>,
-}
-
-impl Default for PersonalizeState {
-    fn default() -> Self {
-        Self {
-            datasets: DashMap::new(),
-            solutions: DashMap::new(),
-            campaigns: DashMap::new(),
-        }
-    }
+    pub datasets: PersistedDashMap<PersonalizeDataset>,
+    pub solutions: PersistedDashMap<Solution>,
+    pub campaigns: PersistedDashMap<Campaign>,
 }
 
 // ---------------------------------------------------------------------------

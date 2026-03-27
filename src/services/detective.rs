@@ -1,10 +1,10 @@
+use crate::persistence::PersistedDashMap;
 use std::sync::Arc;
 
 use axum::extract::State;
 use axum::response::Response;
 use axum::routing::post;
 use axum::Json;
-use dashmap::DashMap;
 use serde_json::{json, Value};
 
 use crate::error::LawsError;
@@ -21,13 +21,13 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct DetectiveGraph {
     pub graph_arn: String,
     pub created_time: f64,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct DetectiveMember {
     pub graph_arn: String,
     pub account_id: String,
@@ -40,18 +40,10 @@ pub struct DetectiveMember {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct DetectiveState {
-    pub graphs: DashMap<String, DetectiveGraph>,
-    pub members: DashMap<String, DetectiveMember>,
-}
-
-impl Default for DetectiveState {
-    fn default() -> Self {
-        Self {
-            graphs: DashMap::new(),
-            members: DashMap::new(),
-        }
-    }
+    pub graphs: PersistedDashMap<DetectiveGraph>,
+    pub members: PersistedDashMap<DetectiveMember>,
 }
 
 // ---------------------------------------------------------------------------

@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -16,14 +16,14 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct LakeFormationResource {
     pub resource_arn: String,
     pub role_arn: String,
     pub last_modified: f64,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct LakeFormationPermission {
     pub id: String,
     pub principal: String,
@@ -35,18 +35,10 @@ pub struct LakeFormationPermission {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct LakeFormationState {
-    pub resources: DashMap<String, LakeFormationResource>,
-    pub permissions: DashMap<String, LakeFormationPermission>,
-}
-
-impl Default for LakeFormationState {
-    fn default() -> Self {
-        Self {
-            resources: DashMap::new(),
-            permissions: DashMap::new(),
-        }
-    }
+    pub resources: PersistedDashMap<LakeFormationResource>,
+    pub permissions: PersistedDashMap<LakeFormationPermission>,
 }
 
 // ---------------------------------------------------------------------------

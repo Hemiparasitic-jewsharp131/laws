@@ -1,3 +1,4 @@
+use crate::persistence::PersistedDashMap;
 use std::collections::VecDeque;
 use std::sync::Arc;
 
@@ -8,7 +9,6 @@ use axum::response::Response;
 use axum::routing::post;
 use axum::Router;
 use chrono::Utc;
-use dashmap::DashMap;
 use md5::{Digest, Md5};
 
 use crate::error::LawsError;
@@ -25,7 +25,7 @@ const REGION: &str = "us-east-1";
 // Domain types
 // ---------------------------------------------------------------------------
 
-#[derive(Clone, Debug)]
+#[derive(serde::Serialize, serde::Deserialize, Clone, Debug)]
 pub struct SqsMessage {
     pub message_id: String,
     pub body: String,
@@ -34,7 +34,7 @@ pub struct SqsMessage {
     pub sent_timestamp: String,
 }
 
-#[derive(Clone, Debug)]
+#[derive(serde::Serialize, serde::Deserialize, Clone, Debug)]
 pub struct SqsQueue {
     pub name: String,
     pub url: String,
@@ -48,13 +48,13 @@ pub struct SqsQueue {
 
 #[derive(Clone)]
 pub struct SqsState {
-    pub queues: Arc<DashMap<String, SqsQueue>>,
+    pub queues: Arc<PersistedDashMap<SqsQueue>>,
 }
 
 impl SqsState {
     pub fn new() -> Self {
         Self {
-            queues: Arc::new(DashMap::new()),
+            queues: Arc::new(PersistedDashMap::default()),
         }
     }
 }

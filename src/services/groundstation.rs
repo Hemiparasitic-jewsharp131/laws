@@ -1,9 +1,9 @@
+use crate::persistence::PersistedDashMap;
 use std::sync::Arc;
 
 use axum::extract::{Path, State};
 use axum::response::Response;
 use axum::Json;
-use dashmap::DashMap;
 use serde_json::{json, Value};
 
 use crate::error::LawsError;
@@ -20,7 +20,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Satellite {
     pub satellite_id: String,
     pub satellite_arn: String,
@@ -28,7 +28,7 @@ pub struct Satellite {
     pub ground_stations: Vec<String>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Config {
     pub config_id: String,
     pub config_arn: String,
@@ -41,18 +41,10 @@ pub struct Config {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct GroundStationState {
-    pub satellites: DashMap<String, Satellite>,
-    pub configs: DashMap<String, Config>,
-}
-
-impl Default for GroundStationState {
-    fn default() -> Self {
-        Self {
-            satellites: DashMap::new(),
-            configs: DashMap::new(),
-        }
-    }
+    pub satellites: PersistedDashMap<Satellite>,
+    pub configs: PersistedDashMap<Config>,
 }
 
 // ---------------------------------------------------------------------------

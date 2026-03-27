@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -16,7 +16,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Fleet {
     pub fleet_id: String,
     pub arn: String,
@@ -27,7 +27,7 @@ pub struct Fleet {
     pub created_at: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct GameSession {
     pub game_session_id: String,
     pub arn: String,
@@ -38,14 +38,14 @@ pub struct GameSession {
     pub created_at: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct GameSessionQueue {
     pub name: String,
     pub arn: String,
     pub timeout_in_seconds: u32,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct MatchmakingConfiguration {
     pub name: String,
     pub arn: String,
@@ -57,22 +57,12 @@ pub struct MatchmakingConfiguration {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct GameLiftState {
-    pub fleets: DashMap<String, Fleet>,
-    pub game_sessions: DashMap<String, GameSession>,
-    pub queues: DashMap<String, GameSessionQueue>,
-    pub matchmaking_configs: DashMap<String, MatchmakingConfiguration>,
-}
-
-impl Default for GameLiftState {
-    fn default() -> Self {
-        Self {
-            fleets: DashMap::new(),
-            game_sessions: DashMap::new(),
-            queues: DashMap::new(),
-            matchmaking_configs: DashMap::new(),
-        }
-    }
+    pub fleets: PersistedDashMap<Fleet>,
+    pub game_sessions: PersistedDashMap<GameSession>,
+    pub queues: PersistedDashMap<GameSessionQueue>,
+    pub matchmaking_configs: PersistedDashMap<MatchmakingConfiguration>,
 }
 
 // ---------------------------------------------------------------------------
@@ -195,7 +185,7 @@ fn describe_fleet_attributes(
     } else {
         fleet_ids
             .iter()
-            .filter_map(|id| state.fleets.get(*id).map(|e| fleet_to_json(e.value())))
+            .filter_map(|id| state.fleets.get(id).map(|e| fleet_to_json(e.value())))
             .collect()
     };
 

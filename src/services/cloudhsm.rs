@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -16,7 +16,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Cluster {
     pub cluster_id: String,
     pub hsm_type: String,
@@ -27,7 +27,7 @@ pub struct Cluster {
     pub tags: Vec<Tag>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Hsm {
     pub hsm_id: String,
     pub cluster_id: String,
@@ -35,7 +35,7 @@ pub struct Hsm {
     pub state: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Tag {
     pub key: String,
     pub value: String,
@@ -45,16 +45,9 @@ pub struct Tag {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct CloudHsmState {
-    pub clusters: DashMap<String, Cluster>,
-}
-
-impl Default for CloudHsmState {
-    fn default() -> Self {
-        Self {
-            clusters: DashMap::new(),
-        }
-    }
+    pub clusters: PersistedDashMap<Cluster>,
 }
 
 // ---------------------------------------------------------------------------

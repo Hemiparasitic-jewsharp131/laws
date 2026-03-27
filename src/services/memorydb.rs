@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -16,7 +16,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct MemoryDbCluster {
     pub name: String,
     pub arn: String,
@@ -27,7 +27,7 @@ pub struct MemoryDbCluster {
     pub engine_version: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct MemoryDbSnapshot {
     pub name: String,
     pub arn: String,
@@ -39,18 +39,10 @@ pub struct MemoryDbSnapshot {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct MemoryDbState {
-    pub clusters: DashMap<String, MemoryDbCluster>,
-    pub snapshots: DashMap<String, MemoryDbSnapshot>,
-}
-
-impl Default for MemoryDbState {
-    fn default() -> Self {
-        Self {
-            clusters: DashMap::new(),
-            snapshots: DashMap::new(),
-        }
-    }
+    pub clusters: PersistedDashMap<MemoryDbCluster>,
+    pub snapshots: PersistedDashMap<MemoryDbSnapshot>,
 }
 
 // ---------------------------------------------------------------------------

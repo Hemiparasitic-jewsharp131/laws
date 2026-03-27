@@ -1,7 +1,7 @@
+use crate::persistence::PersistedDashMap;
 use axum::body::Bytes;
 use axum::http::{HeaderMap, Uri};
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -19,7 +19,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct CacheCluster {
     pub cache_cluster_id: String,
     pub engine: String,
@@ -29,7 +29,7 @@ pub struct CacheCluster {
     pub arn: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct ReplicationGroup {
     pub replication_group_id: String,
     pub description: String,
@@ -42,18 +42,10 @@ pub struct ReplicationGroup {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct ElastiCacheState {
-    pub clusters: DashMap<String, CacheCluster>,
-    pub replication_groups: DashMap<String, ReplicationGroup>,
-}
-
-impl Default for ElastiCacheState {
-    fn default() -> Self {
-        Self {
-            clusters: DashMap::new(),
-            replication_groups: DashMap::new(),
-        }
-    }
+    pub clusters: PersistedDashMap<CacheCluster>,
+    pub replication_groups: PersistedDashMap<ReplicationGroup>,
 }
 
 // ---------------------------------------------------------------------------

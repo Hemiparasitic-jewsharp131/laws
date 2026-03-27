@@ -1,3 +1,4 @@
+use crate::persistence::PersistedDashMap;
 use std::sync::Arc;
 
 use axum::extract::{Path, State};
@@ -5,7 +6,6 @@ use axum::response::Response;
 use axum::routing::{delete, get, post};
 use axum::Json;
 use chrono::Utc;
-use dashmap::DashMap;
 use serde::Deserialize;
 use serde_json::{json, Value};
 
@@ -23,7 +23,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Folder {
     pub folder_id: String,
     pub name: String,
@@ -34,7 +34,7 @@ pub struct Folder {
     pub status: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Document {
     pub document_id: String,
     pub name: String,
@@ -45,7 +45,7 @@ pub struct Document {
     pub latest_version_status: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct User {
     pub user_id: String,
     pub username: String,
@@ -59,20 +59,11 @@ pub struct User {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct WorkDocsState {
-    pub folders: DashMap<String, Folder>,
-    pub documents: DashMap<String, Document>,
-    pub users: DashMap<String, User>,
-}
-
-impl Default for WorkDocsState {
-    fn default() -> Self {
-        Self {
-            folders: DashMap::new(),
-            documents: DashMap::new(),
-            users: DashMap::new(),
-        }
-    }
+    pub folders: PersistedDashMap<Folder>,
+    pub documents: PersistedDashMap<Document>,
+    pub users: PersistedDashMap<User>,
 }
 
 // ---------------------------------------------------------------------------

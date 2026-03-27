@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -16,7 +16,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct ResolverEndpoint {
     pub id: String,
     pub arn: String,
@@ -28,7 +28,7 @@ pub struct ResolverEndpoint {
     pub created_at: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct ResolverRule {
     pub id: String,
     pub arn: String,
@@ -44,18 +44,10 @@ pub struct ResolverRule {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct Route53ResolverState {
-    pub endpoints: DashMap<String, ResolverEndpoint>,
-    pub rules: DashMap<String, ResolverRule>,
-}
-
-impl Default for Route53ResolverState {
-    fn default() -> Self {
-        Self {
-            endpoints: DashMap::new(),
-            rules: DashMap::new(),
-        }
-    }
+    pub endpoints: PersistedDashMap<ResolverEndpoint>,
+    pub rules: PersistedDashMap<ResolverRule>,
 }
 
 // ---------------------------------------------------------------------------

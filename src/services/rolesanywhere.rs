@@ -1,3 +1,4 @@
+use crate::persistence::PersistedDashMap;
 use std::sync::Arc;
 
 use axum::extract::{Path, State};
@@ -5,7 +6,6 @@ use axum::response::Response;
 use axum::routing::{get, post};
 use axum::Json;
 use chrono::Utc;
-use dashmap::DashMap;
 use serde::Deserialize;
 use serde_json::{json, Value};
 
@@ -23,7 +23,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct TrustAnchor {
     pub trust_anchor_id: String,
     pub trust_anchor_arn: String,
@@ -35,7 +35,7 @@ pub struct TrustAnchor {
     pub updated_at: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Profile {
     pub profile_id: String,
     pub profile_arn: String,
@@ -51,18 +51,10 @@ pub struct Profile {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct RolesAnywhereState {
-    pub trust_anchors: DashMap<String, TrustAnchor>,
-    pub profiles: DashMap<String, Profile>,
-}
-
-impl Default for RolesAnywhereState {
-    fn default() -> Self {
-        Self {
-            trust_anchors: DashMap::new(),
-            profiles: DashMap::new(),
-        }
-    }
+    pub trust_anchors: PersistedDashMap<TrustAnchor>,
+    pub profiles: PersistedDashMap<Profile>,
 }
 
 // ---------------------------------------------------------------------------

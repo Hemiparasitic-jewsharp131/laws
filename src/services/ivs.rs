@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -16,7 +16,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Channel {
     pub arn: String,
     pub name: String,
@@ -28,7 +28,7 @@ pub struct Channel {
     pub authorized: bool,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct StreamKey {
     pub arn: String,
     pub channel_arn: String,
@@ -39,18 +39,10 @@ pub struct StreamKey {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct IvsState {
-    pub channels: DashMap<String, Channel>,
-    pub stream_keys: DashMap<String, StreamKey>,
-}
-
-impl Default for IvsState {
-    fn default() -> Self {
-        Self {
-            channels: DashMap::new(),
-            stream_keys: DashMap::new(),
-        }
-    }
+    pub channels: PersistedDashMap<Channel>,
+    pub stream_keys: PersistedDashMap<StreamKey>,
 }
 
 // ---------------------------------------------------------------------------

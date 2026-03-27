@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -16,7 +16,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Detector {
     pub detector_id: String,
     pub detector_version_id: String,
@@ -25,7 +25,7 @@ pub struct Detector {
     pub arn: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Model {
     pub model_id: String,
     pub model_type: String,
@@ -37,18 +37,10 @@ pub struct Model {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct FraudDetectorState {
-    pub detectors: DashMap<String, Detector>,
-    pub models: DashMap<String, Model>,
-}
-
-impl Default for FraudDetectorState {
-    fn default() -> Self {
-        Self {
-            detectors: DashMap::new(),
-            models: DashMap::new(),
-        }
-    }
+    pub detectors: PersistedDashMap<Detector>,
+    pub models: PersistedDashMap<Model>,
 }
 
 // ---------------------------------------------------------------------------

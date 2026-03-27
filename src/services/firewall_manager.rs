@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -16,7 +16,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct FmsPolicy {
     pub policy_id: String,
     pub policy_name: String,
@@ -25,7 +25,7 @@ pub struct FmsPolicy {
     pub remediation_enabled: bool,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct NotificationChannel {
     pub sns_topic_arn: String,
     pub sns_role_name: String,
@@ -35,18 +35,10 @@ pub struct NotificationChannel {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct FirewallManagerState {
-    pub policies: DashMap<String, FmsPolicy>,
-    pub notification_channel: DashMap<String, NotificationChannel>,
-}
-
-impl Default for FirewallManagerState {
-    fn default() -> Self {
-        Self {
-            policies: DashMap::new(),
-            notification_channel: DashMap::new(),
-        }
-    }
+    pub policies: PersistedDashMap<FmsPolicy>,
+    pub notification_channel: PersistedDashMap<NotificationChannel>,
 }
 
 // ---------------------------------------------------------------------------

@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -18,7 +18,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Domain {
     pub domain_name: String,
     pub auto_renew: bool,
@@ -35,16 +35,9 @@ pub struct Domain {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct Route53DomainsState {
-    pub domains: DashMap<String, Domain>,
-}
-
-impl Default for Route53DomainsState {
-    fn default() -> Self {
-        Self {
-            domains: DashMap::new(),
-        }
-    }
+    pub domains: PersistedDashMap<Domain>,
 }
 
 // ---------------------------------------------------------------------------

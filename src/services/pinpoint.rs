@@ -1,10 +1,11 @@
+use crate::persistence::PersistedDashMap;
+use dashmap::DashMap;
 use std::sync::Arc;
 
 use axum::extract::{Path, State};
 use axum::response::Response;
 use axum::routing::{get, post};
 use axum::Json;
-use dashmap::DashMap;
 use serde_json::{json, Value};
 
 use crate::error::LawsError;
@@ -21,16 +22,17 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct PinpointApp {
     pub id: String,
     pub name: String,
     pub arn: String,
     pub created: String,
+    #[serde(skip)]
     pub campaigns: DashMap<String, PinpointCampaign>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct PinpointCampaign {
     pub id: String,
     pub name: String,
@@ -44,16 +46,9 @@ pub struct PinpointCampaign {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct PinpointState {
-    pub apps: DashMap<String, PinpointApp>,
-}
-
-impl Default for PinpointState {
-    fn default() -> Self {
-        Self {
-            apps: DashMap::new(),
-        }
-    }
+    pub apps: PersistedDashMap<PinpointApp>,
 }
 
 // ---------------------------------------------------------------------------

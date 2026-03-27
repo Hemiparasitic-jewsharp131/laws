@@ -1,3 +1,4 @@
+use crate::persistence::PersistedDashMap;
 use std::collections::HashMap;
 use std::sync::Arc;
 
@@ -8,7 +9,6 @@ use axum::response::Response;
 use axum::routing::post;
 use axum::Router;
 use chrono::Utc;
-use dashmap::DashMap;
 
 use crate::error::LawsError;
 use crate::protocol::query::{parse_query_request, xml_error_response, xml_response};
@@ -17,7 +17,7 @@ use crate::protocol::query::{parse_query_request, xml_error_response, xml_respon
 // Domain types
 // ---------------------------------------------------------------------------
 
-#[derive(Clone, Debug)]
+#[derive(serde::Serialize, serde::Deserialize, Clone, Debug)]
 pub struct MetricDataPoint {
     pub metric_name: String,
     pub namespace: String,
@@ -26,7 +26,7 @@ pub struct MetricDataPoint {
     pub timestamp: String,
 }
 
-#[derive(Clone, Debug)]
+#[derive(serde::Serialize, serde::Deserialize, Clone, Debug)]
 pub struct CloudWatchAlarm {
     pub alarm_name: String,
     pub metric_name: String,
@@ -47,16 +47,16 @@ pub struct CloudWatchAlarm {
 #[derive(Clone)]
 pub struct CloudWatchState {
     /// Keyed by "{namespace}/{metric_name}"
-    pub metrics: Arc<DashMap<String, Vec<MetricDataPoint>>>,
+    pub metrics: Arc<PersistedDashMap<Vec<MetricDataPoint>>>,
     /// Keyed by alarm name
-    pub alarms: Arc<DashMap<String, CloudWatchAlarm>>,
+    pub alarms: Arc<PersistedDashMap<CloudWatchAlarm>>,
 }
 
 impl Default for CloudWatchState {
     fn default() -> Self {
         Self {
-            metrics: Arc::new(DashMap::new()),
-            alarms: Arc::new(DashMap::new()),
+            metrics: Arc::new(PersistedDashMap::default()),
+            alarms: Arc::new(PersistedDashMap::default()),
         }
     }
 }

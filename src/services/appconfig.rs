@@ -1,9 +1,9 @@
+use crate::persistence::PersistedDashMap;
 use std::sync::Arc;
 
 use axum::extract::{Path, State};
 use axum::response::Response;
 use axum::Json;
-use dashmap::DashMap;
 use serde_json::{json, Value};
 
 use crate::error::LawsError;
@@ -20,14 +20,14 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct AppConfigApplication {
     pub id: String,
     pub name: String,
     pub description: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct AppConfigEnvironment {
     pub application_id: String,
     pub id: String,
@@ -36,7 +36,7 @@ pub struct AppConfigEnvironment {
     pub state: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct AppConfigProfile {
     pub application_id: String,
     pub id: String,
@@ -48,20 +48,11 @@ pub struct AppConfigProfile {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct AppConfigState {
-    pub applications: DashMap<String, AppConfigApplication>,
-    pub environments: DashMap<String, AppConfigEnvironment>,
-    pub profiles: DashMap<String, AppConfigProfile>,
-}
-
-impl Default for AppConfigState {
-    fn default() -> Self {
-        Self {
-            applications: DashMap::new(),
-            environments: DashMap::new(),
-            profiles: DashMap::new(),
-        }
-    }
+    pub applications: PersistedDashMap<AppConfigApplication>,
+    pub environments: PersistedDashMap<AppConfigEnvironment>,
+    pub profiles: PersistedDashMap<AppConfigProfile>,
 }
 
 // ---------------------------------------------------------------------------

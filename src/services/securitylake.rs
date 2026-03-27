@@ -1,9 +1,9 @@
+use crate::persistence::PersistedDashMap;
 use std::sync::Arc;
 
 use axum::extract::{Path, State};
 use axum::response::Response;
 use axum::Json;
-use dashmap::DashMap;
 use serde_json::{json, Value};
 
 use crate::error::LawsError;
@@ -20,7 +20,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct DataLake {
     pub data_lake_arn: String,
     pub region: String,
@@ -30,7 +30,7 @@ pub struct DataLake {
     pub created_at: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Subscriber {
     pub subscriber_id: String,
     pub subscriber_arn: String,
@@ -46,18 +46,10 @@ pub struct Subscriber {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct SecurityLakeState {
-    pub data_lakes: DashMap<String, DataLake>,
-    pub subscribers: DashMap<String, Subscriber>,
-}
-
-impl Default for SecurityLakeState {
-    fn default() -> Self {
-        Self {
-            data_lakes: DashMap::new(),
-            subscribers: DashMap::new(),
-        }
-    }
+    pub data_lakes: PersistedDashMap<DataLake>,
+    pub subscribers: PersistedDashMap<Subscriber>,
 }
 
 // ---------------------------------------------------------------------------

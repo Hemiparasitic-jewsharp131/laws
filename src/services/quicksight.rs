@@ -1,9 +1,9 @@
+use crate::persistence::PersistedDashMap;
 use std::sync::Arc;
 
 use axum::extract::{Path, State};
 use axum::response::Response;
 use axum::Json;
-use dashmap::DashMap;
 use serde_json::{json, Value};
 
 use crate::error::LawsError;
@@ -20,7 +20,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct DataSet {
     pub data_set_id: String,
     pub arn: String,
@@ -29,7 +29,7 @@ pub struct DataSet {
     pub created_time: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Dashboard {
     pub dashboard_id: String,
     pub arn: String,
@@ -42,18 +42,10 @@ pub struct Dashboard {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct QuickSightState {
-    pub datasets: DashMap<String, DataSet>,
-    pub dashboards: DashMap<String, Dashboard>,
-}
-
-impl Default for QuickSightState {
-    fn default() -> Self {
-        Self {
-            datasets: DashMap::new(),
-            dashboards: DashMap::new(),
-        }
-    }
+    pub datasets: PersistedDashMap<DataSet>,
+    pub dashboards: PersistedDashMap<Dashboard>,
 }
 
 // ---------------------------------------------------------------------------

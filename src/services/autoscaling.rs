@@ -1,7 +1,7 @@
+use crate::persistence::PersistedDashMap;
 use axum::body::Bytes;
 use axum::http::{HeaderMap, Uri};
 use axum::response::Response;
-use dashmap::DashMap;
 
 use crate::error::LawsError;
 use crate::protocol::query::{parse_query_request, xml_error_response, xml_response};
@@ -17,7 +17,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct AutoScalingGroup {
     pub name: String,
     pub arn: String,
@@ -28,7 +28,7 @@ pub struct AutoScalingGroup {
     pub status: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct LaunchConfiguration {
     pub name: String,
     pub arn: String,
@@ -40,18 +40,10 @@ pub struct LaunchConfiguration {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct AutoScalingState {
-    pub groups: DashMap<String, AutoScalingGroup>,
-    pub launch_configs: DashMap<String, LaunchConfiguration>,
-}
-
-impl Default for AutoScalingState {
-    fn default() -> Self {
-        Self {
-            groups: DashMap::new(),
-            launch_configs: DashMap::new(),
-        }
-    }
+    pub groups: PersistedDashMap<AutoScalingGroup>,
+    pub launch_configs: PersistedDashMap<LaunchConfiguration>,
 }
 
 // ---------------------------------------------------------------------------

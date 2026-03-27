@@ -1,3 +1,4 @@
+use crate::persistence::PersistedDashMap;
 use std::sync::Arc;
 
 use axum::extract::{Path, State};
@@ -5,7 +6,6 @@ use axum::response::Response;
 use axum::routing::{get, post};
 use axum::Json;
 use chrono::Utc;
-use dashmap::DashMap;
 use serde::Deserialize;
 use serde_json::{json, Value};
 
@@ -23,7 +23,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Environment {
     pub environment_id: String,
     pub name: String,
@@ -33,7 +33,7 @@ pub struct Environment {
     pub created_at: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct KxDatabase {
     pub database_name: String,
     pub environment_id: String,
@@ -47,18 +47,10 @@ pub struct KxDatabase {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct FinSpaceState {
-    pub environments: DashMap<String, Environment>,
-    pub kx_databases: DashMap<String, KxDatabase>,
-}
-
-impl Default for FinSpaceState {
-    fn default() -> Self {
-        Self {
-            environments: DashMap::new(),
-            kx_databases: DashMap::new(),
-        }
-    }
+    pub environments: PersistedDashMap<Environment>,
+    pub kx_databases: PersistedDashMap<KxDatabase>,
 }
 
 // ---------------------------------------------------------------------------

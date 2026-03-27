@@ -1,6 +1,6 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
 use chrono::Utc;
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -17,7 +17,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct PolicyStore {
     pub policy_store_id: String,
     pub arn: String,
@@ -25,7 +25,7 @@ pub struct PolicyStore {
     pub validation_settings: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Policy {
     pub policy_id: String,
     pub policy_store_id: String,
@@ -38,18 +38,10 @@ pub struct Policy {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct VerifiedPermissionsState {
-    pub policy_stores: DashMap<String, PolicyStore>,
-    pub policies: DashMap<String, Policy>,
-}
-
-impl Default for VerifiedPermissionsState {
-    fn default() -> Self {
-        Self {
-            policy_stores: DashMap::new(),
-            policies: DashMap::new(),
-        }
-    }
+    pub policy_stores: PersistedDashMap<PolicyStore>,
+    pub policies: PersistedDashMap<Policy>,
 }
 
 // ---------------------------------------------------------------------------

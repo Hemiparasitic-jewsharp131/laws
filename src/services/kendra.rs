@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -16,7 +16,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct KendraIndex {
     pub id: String,
     pub name: String,
@@ -26,7 +26,7 @@ pub struct KendraIndex {
     pub created_at: f64,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct KendraDataSource {
     pub id: String,
     pub index_id: String,
@@ -40,18 +40,10 @@ pub struct KendraDataSource {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct KendraState {
-    pub indexes: DashMap<String, KendraIndex>,
-    pub data_sources: DashMap<String, KendraDataSource>,
-}
-
-impl Default for KendraState {
-    fn default() -> Self {
-        Self {
-            indexes: DashMap::new(),
-            data_sources: DashMap::new(),
-        }
-    }
+    pub indexes: PersistedDashMap<KendraIndex>,
+    pub data_sources: PersistedDashMap<KendraDataSource>,
 }
 
 // ---------------------------------------------------------------------------

@@ -1,7 +1,7 @@
+use crate::persistence::PersistedDashMap;
 use axum::body::Bytes;
 use axum::http::{HeaderMap, Uri};
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -19,7 +19,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct CfStack {
     pub stack_name: String,
     pub stack_id: String,
@@ -35,16 +35,9 @@ pub struct CfStack {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct CloudFormationState {
-    pub stacks: DashMap<String, CfStack>,
-}
-
-impl Default for CloudFormationState {
-    fn default() -> Self {
-        Self {
-            stacks: DashMap::new(),
-        }
-    }
+    pub stacks: PersistedDashMap<CfStack>,
 }
 
 // ---------------------------------------------------------------------------

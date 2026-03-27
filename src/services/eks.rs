@@ -1,3 +1,4 @@
+use crate::persistence::PersistedDashMap;
 use std::sync::Arc;
 
 use axum::extract::{Path, State};
@@ -5,7 +6,6 @@ use axum::response::Response;
 use axum::routing::{get, post};
 use axum::Json;
 use chrono::Utc;
-use dashmap::DashMap;
 use serde_json::{json, Value};
 
 use crate::error::LawsError;
@@ -22,7 +22,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct EksCluster {
     pub name: String,
     pub arn: String,
@@ -37,16 +37,9 @@ pub struct EksCluster {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct EksState {
-    pub clusters: DashMap<String, EksCluster>,
-}
-
-impl Default for EksState {
-    fn default() -> Self {
-        Self {
-            clusters: DashMap::new(),
-        }
-    }
+    pub clusters: PersistedDashMap<EksCluster>,
 }
 
 // ---------------------------------------------------------------------------

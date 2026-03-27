@@ -1,6 +1,6 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
 use chrono::Utc;
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -17,7 +17,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct ScalableTarget {
     pub service_namespace: String,
     pub resource_id: String,
@@ -29,7 +29,7 @@ pub struct ScalableTarget {
     pub suspended_state: Value,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct ScalingPolicy {
     pub policy_name: String,
     pub policy_arn: String,
@@ -45,18 +45,10 @@ pub struct ScalingPolicy {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct ApplicationAutoscalingState {
-    pub targets: DashMap<String, ScalableTarget>,
-    pub policies: DashMap<String, ScalingPolicy>,
-}
-
-impl Default for ApplicationAutoscalingState {
-    fn default() -> Self {
-        Self {
-            targets: DashMap::new(),
-            policies: DashMap::new(),
-        }
-    }
+    pub targets: PersistedDashMap<ScalableTarget>,
+    pub policies: PersistedDashMap<ScalingPolicy>,
 }
 
 // ---------------------------------------------------------------------------

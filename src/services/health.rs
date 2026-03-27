@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -16,7 +16,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct HealthEvent {
     pub arn: String,
     pub service: String,
@@ -33,12 +33,12 @@ pub struct HealthEvent {
 // ---------------------------------------------------------------------------
 
 pub struct HealthState {
-    pub events: DashMap<String, HealthEvent>,
+    pub events: PersistedDashMap<HealthEvent>,
 }
 
 impl Default for HealthState {
     fn default() -> Self {
-        let events = DashMap::new();
+        let events = PersistedDashMap::default();
         // Seed with mock health event data
         let now = chrono::Utc::now().to_rfc3339();
         events.insert(
@@ -146,7 +146,7 @@ fn describe_event_details(state: &HealthState, payload: &Value) -> Result<Respon
     let mut failed_set = Vec::new();
 
     for arn in &event_arns {
-        match state.events.get(*arn) {
+        match state.events.get(arn) {
             Some(ev) => {
                 successful_set.push(json!({
                     "event": {

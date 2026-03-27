@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -16,7 +16,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Application {
     pub name: String,
     pub application_id: String,
@@ -24,7 +24,7 @@ pub struct Application {
     pub compute_platform: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct DeploymentGroup {
     pub deployment_group_name: String,
     pub deployment_group_id: String,
@@ -32,7 +32,7 @@ pub struct DeploymentGroup {
     pub service_role_arn: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Deployment {
     pub deployment_id: String,
     pub application_name: String,
@@ -45,18 +45,10 @@ pub struct Deployment {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct CodeDeployState {
-    pub applications: DashMap<String, Application>,
-    pub deployment_groups: DashMap<String, DeploymentGroup>,
-}
-
-impl Default for CodeDeployState {
-    fn default() -> Self {
-        Self {
-            applications: DashMap::new(),
-            deployment_groups: DashMap::new(),
-        }
-    }
+    pub applications: PersistedDashMap<Application>,
+    pub deployment_groups: PersistedDashMap<DeploymentGroup>,
 }
 
 // ---------------------------------------------------------------------------

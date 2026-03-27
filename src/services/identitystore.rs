@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -16,7 +16,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct User {
     pub user_id: String,
     pub identity_store_id: String,
@@ -25,7 +25,7 @@ pub struct User {
     pub email: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Group {
     pub group_id: String,
     pub identity_store_id: String,
@@ -37,18 +37,10 @@ pub struct Group {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct IdentityStoreState {
-    pub users: DashMap<String, User>,
-    pub groups: DashMap<String, Group>,
-}
-
-impl Default for IdentityStoreState {
-    fn default() -> Self {
-        Self {
-            users: DashMap::new(),
-            groups: DashMap::new(),
-        }
-    }
+    pub users: PersistedDashMap<User>,
+    pub groups: PersistedDashMap<Group>,
 }
 
 // ---------------------------------------------------------------------------

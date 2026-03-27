@@ -1,7 +1,7 @@
+use crate::persistence::PersistedDashMap;
 use std::sync::atomic::{AtomicU64, Ordering};
 
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -18,7 +18,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct EmailIdentity {
     pub identity: String,
     pub identity_type: String,
@@ -30,14 +30,14 @@ pub struct EmailIdentity {
 // ---------------------------------------------------------------------------
 
 pub struct SesState {
-    pub identities: DashMap<String, EmailIdentity>,
+    pub identities: PersistedDashMap<EmailIdentity>,
     pub sent_count: AtomicU64,
 }
 
 impl Default for SesState {
     fn default() -> Self {
         Self {
-            identities: DashMap::new(),
+            identities: PersistedDashMap::default(),
             sent_count: AtomicU64::new(0),
         }
     }

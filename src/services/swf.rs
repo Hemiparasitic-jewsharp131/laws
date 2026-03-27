@@ -1,6 +1,6 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
 use chrono::Utc;
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -17,7 +17,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Domain {
     pub name: String,
     pub status: String,
@@ -26,7 +26,7 @@ pub struct Domain {
     pub retention_period: i64,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct WorkflowType {
     pub domain: String,
     pub name: String,
@@ -35,7 +35,7 @@ pub struct WorkflowType {
     pub description: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct WorkflowExecution {
     pub domain: String,
     pub workflow_id: String,
@@ -50,20 +50,11 @@ pub struct WorkflowExecution {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct SwfState {
-    pub domains: DashMap<String, Domain>,
-    pub workflow_types: DashMap<String, WorkflowType>,
-    pub executions: DashMap<String, WorkflowExecution>,
-}
-
-impl Default for SwfState {
-    fn default() -> Self {
-        Self {
-            domains: DashMap::new(),
-            workflow_types: DashMap::new(),
-            executions: DashMap::new(),
-        }
-    }
+    pub domains: PersistedDashMap<Domain>,
+    pub workflow_types: PersistedDashMap<WorkflowType>,
+    pub executions: PersistedDashMap<WorkflowExecution>,
 }
 
 // ---------------------------------------------------------------------------

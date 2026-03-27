@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -16,7 +16,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Protection {
     pub id: String,
     pub name: String,
@@ -24,7 +24,7 @@ pub struct Protection {
     pub resource_arn: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Subscription {
     pub start_time: String,
     pub time_commitment_in_seconds: u64,
@@ -35,18 +35,10 @@ pub struct Subscription {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct ShieldState {
-    pub protections: DashMap<String, Protection>,
-    pub subscription: DashMap<String, Subscription>,
-}
-
-impl Default for ShieldState {
-    fn default() -> Self {
-        Self {
-            protections: DashMap::new(),
-            subscription: DashMap::new(),
-        }
-    }
+    pub protections: PersistedDashMap<Protection>,
+    pub subscription: PersistedDashMap<Subscription>,
 }
 
 // ---------------------------------------------------------------------------

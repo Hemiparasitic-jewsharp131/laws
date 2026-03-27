@@ -1,10 +1,10 @@
+use crate::persistence::PersistedDashMap;
 use std::sync::Arc;
 
 use axum::extract::{Path, State};
 use axum::response::Response;
 use axum::routing::{get, post};
 use axum::Json;
-use dashmap::DashMap;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 
@@ -42,18 +42,10 @@ pub struct Insight {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct DevOpsGuruState {
-    pub channels: DashMap<String, NotificationChannel>,
-    pub insights: DashMap<String, Insight>,
-}
-
-impl Default for DevOpsGuruState {
-    fn default() -> Self {
-        Self {
-            channels: DashMap::new(),
-            insights: DashMap::new(),
-        }
-    }
+    pub channels: PersistedDashMap<NotificationChannel>,
+    pub insights: PersistedDashMap<Insight>,
 }
 
 // ---------------------------------------------------------------------------

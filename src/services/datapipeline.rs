@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -16,7 +16,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Pipeline {
     pub pipeline_id: String,
     pub name: String,
@@ -29,16 +29,9 @@ pub struct Pipeline {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct DataPipelineState {
-    pub pipelines: DashMap<String, Pipeline>,
-}
-
-impl Default for DataPipelineState {
-    fn default() -> Self {
-        Self {
-            pipelines: DashMap::new(),
-        }
-    }
+    pub pipelines: PersistedDashMap<Pipeline>,
 }
 
 // ---------------------------------------------------------------------------

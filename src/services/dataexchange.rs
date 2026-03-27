@@ -1,3 +1,4 @@
+use crate::persistence::PersistedDashMap;
 use std::sync::Arc;
 
 use axum::extract::{Path, State};
@@ -5,7 +6,6 @@ use axum::response::Response;
 use axum::routing::{get, post};
 use axum::Json;
 use chrono::Utc;
-use dashmap::DashMap;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 
@@ -47,18 +47,10 @@ pub struct Revision {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct DataExchangeState {
-    pub datasets: DashMap<String, DataSet>,
-    pub revisions: DashMap<String, Revision>,
-}
-
-impl Default for DataExchangeState {
-    fn default() -> Self {
-        Self {
-            datasets: DashMap::new(),
-            revisions: DashMap::new(),
-        }
-    }
+    pub datasets: PersistedDashMap<DataSet>,
+    pub revisions: PersistedDashMap<Revision>,
 }
 
 // ---------------------------------------------------------------------------

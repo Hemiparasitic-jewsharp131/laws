@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -16,7 +16,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct LightsailInstance {
     pub name: String,
     pub arn: String,
@@ -26,7 +26,7 @@ pub struct LightsailInstance {
     pub created_at: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct LightsailDatabase {
     pub name: String,
     pub arn: String,
@@ -40,18 +40,10 @@ pub struct LightsailDatabase {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct LightsailState {
-    pub instances: DashMap<String, LightsailInstance>,
-    pub databases: DashMap<String, LightsailDatabase>,
-}
-
-impl Default for LightsailState {
-    fn default() -> Self {
-        Self {
-            instances: DashMap::new(),
-            databases: DashMap::new(),
-        }
-    }
+    pub instances: PersistedDashMap<LightsailInstance>,
+    pub databases: PersistedDashMap<LightsailDatabase>,
 }
 
 // ---------------------------------------------------------------------------

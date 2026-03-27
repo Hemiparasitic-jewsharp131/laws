@@ -1,7 +1,7 @@
+use crate::persistence::PersistedDashMap;
 use axum::body::Bytes;
 use axum::http::{HeaderMap, Uri};
 use axum::response::Response;
-use dashmap::DashMap;
 
 use crate::error::LawsError;
 use crate::protocol::query::{parse_query_request, xml_error_response, xml_response};
@@ -17,7 +17,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct BeanstalkApplication {
     pub name: String,
     pub arn: String,
@@ -26,7 +26,7 @@ pub struct BeanstalkApplication {
     pub date_updated: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct BeanstalkEnvironment {
     pub environment_id: String,
     pub environment_name: String,
@@ -43,18 +43,10 @@ pub struct BeanstalkEnvironment {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct ElasticBeanstalkState {
-    pub applications: DashMap<String, BeanstalkApplication>,
-    pub environments: DashMap<String, BeanstalkEnvironment>,
-}
-
-impl Default for ElasticBeanstalkState {
-    fn default() -> Self {
-        Self {
-            applications: DashMap::new(),
-            environments: DashMap::new(),
-        }
-    }
+    pub applications: PersistedDashMap<BeanstalkApplication>,
+    pub environments: PersistedDashMap<BeanstalkEnvironment>,
 }
 
 // ---------------------------------------------------------------------------

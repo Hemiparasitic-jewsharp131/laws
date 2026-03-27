@@ -8,7 +8,6 @@ use axum::routing::{get, put};
 use axum::Router;
 use chrono::Utc;
 use md5::{Digest, Md5};
-use serde::Deserialize;
 
 use crate::error::LawsError;
 use crate::storage::mem::MemoryStore;
@@ -17,13 +16,13 @@ use crate::storage::mem::MemoryStore;
 // Domain types
 // ---------------------------------------------------------------------------
 
-#[derive(Clone, Debug)]
+#[derive(serde::Serialize, serde::Deserialize, Clone, Debug)]
 pub struct S3Bucket {
     pub name: String,
     pub creation_date: String,
 }
 
-#[derive(Clone, Debug)]
+#[derive(serde::Serialize, serde::Deserialize, Clone, Debug)]
 pub struct S3Object {
     pub key: String,
     pub body: Vec<u8>,
@@ -191,7 +190,7 @@ async fn list_buckets(State(state): State<Arc<S3State>>) -> Response {
     xml_response(StatusCode::OK, body)
 }
 
-#[derive(Deserialize, Default)]
+#[derive(serde::Serialize, serde::Deserialize, Default)]
 pub struct ListObjectsParams {
     #[serde(rename = "list-type")]
     pub list_type: Option<String>,

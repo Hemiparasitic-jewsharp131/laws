@@ -1,5 +1,5 @@
+use crate::persistence::PersistedDashMap;
 use axum::response::{IntoResponse, Response};
-use dashmap::DashMap;
 use http::StatusCode;
 use serde_json::{json, Value};
 
@@ -12,7 +12,7 @@ const REGION: &str = "us-east-1";
 // Data model
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Gateway {
     pub gateway_arn: String,
     pub gateway_id: String,
@@ -21,7 +21,7 @@ pub struct Gateway {
     pub gateway_state: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Volume {
     pub volume_arn: String,
     pub volume_id: String,
@@ -35,18 +35,10 @@ pub struct Volume {
 // State
 // ---------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct StorageGatewayState {
-    pub gateways: DashMap<String, Gateway>,
-    pub volumes: DashMap<String, Volume>,
-}
-
-impl Default for StorageGatewayState {
-    fn default() -> Self {
-        Self {
-            gateways: DashMap::new(),
-            volumes: DashMap::new(),
-        }
-    }
+    pub gateways: PersistedDashMap<Gateway>,
+    pub volumes: PersistedDashMap<Volume>,
 }
 
 // ---------------------------------------------------------------------------
