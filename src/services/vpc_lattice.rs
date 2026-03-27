@@ -60,6 +60,15 @@ pub struct VpcLatticeState {
     pub target_groups: PersistedDashMap<TargetGroup>,
 }
 
+impl VpcLatticeState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            services: PersistedDashMap::new("vpc_lattice_services", db),
+            target_groups: PersistedDashMap::new("vpc_lattice_target_groups", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

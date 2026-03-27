@@ -36,6 +36,14 @@ pub struct CurState {
     pub reports: PersistedDashMap<ReportDefinition>,
 }
 
+impl CurState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            reports: PersistedDashMap::new("cur_reports", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

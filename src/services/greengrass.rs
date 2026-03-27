@@ -46,6 +46,15 @@ pub struct GreengrassState {
     pub core_devices: PersistedDashMap<CoreDevice>,
 }
 
+impl GreengrassState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            components: PersistedDashMap::new("greengrass_components", db),
+            core_devices: PersistedDashMap::new("greengrass_core_devices", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

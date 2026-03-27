@@ -48,6 +48,15 @@ pub struct WorkMailState {
     pub users: PersistedDashMap<WorkMailUser>,
 }
 
+impl WorkMailState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            organizations: PersistedDashMap::new("workmail_organizations", db),
+            users: PersistedDashMap::new("workmail_users", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

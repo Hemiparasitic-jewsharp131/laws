@@ -56,6 +56,14 @@ impl Default for LambdaState {
     }
 }
 
+impl LambdaState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            functions: MemoryStore::new_with_db("lambda_functions", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

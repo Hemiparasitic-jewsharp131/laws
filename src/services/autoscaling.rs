@@ -46,6 +46,15 @@ pub struct AutoScalingState {
     pub launch_configs: PersistedDashMap<LaunchConfiguration>,
 }
 
+impl AutoScalingState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            groups: PersistedDashMap::new("autoscaling_groups", db),
+            launch_configs: PersistedDashMap::new("autoscaling_launch_configs", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

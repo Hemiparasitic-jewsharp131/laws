@@ -43,6 +43,14 @@ pub struct MwaaState {
     pub environments: PersistedDashMap<Environment>,
 }
 
+impl MwaaState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            environments: PersistedDashMap::new("mwaa_environments", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

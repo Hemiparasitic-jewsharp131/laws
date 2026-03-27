@@ -46,6 +46,15 @@ pub struct KendraState {
     pub data_sources: PersistedDashMap<KendraDataSource>,
 }
 
+impl KendraState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            indexes: PersistedDashMap::new("kendra_indexes", db),
+            data_sources: PersistedDashMap::new("kendra_data_sources", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Handler
 // ---------------------------------------------------------------------------

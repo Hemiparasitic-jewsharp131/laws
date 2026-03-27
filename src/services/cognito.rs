@@ -54,6 +54,16 @@ pub struct CognitoState {
     pub users: PersistedDashMap<CognitoUser>,
 }
 
+impl CognitoState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            user_pools: PersistedDashMap::new("cognito_user_pools", db),
+            user_pool_clients: PersistedDashMap::new("cognito_user_pool_clients", db),
+            users: PersistedDashMap::new("cognito_users", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

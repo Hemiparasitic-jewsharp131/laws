@@ -61,6 +61,16 @@ pub struct DmsState {
     pub tasks: PersistedDashMap<ReplicationTask>,
 }
 
+impl DmsState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            replication_instances: PersistedDashMap::new("dms_replication_instances", db),
+            endpoints: PersistedDashMap::new("dms_endpoints", db),
+            tasks: PersistedDashMap::new("dms_tasks", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

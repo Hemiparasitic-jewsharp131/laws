@@ -34,6 +34,15 @@ pub struct SesState {
     pub sent_count: AtomicU64,
 }
 
+impl SesState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            identities: PersistedDashMap::new("ses_identities", db),
+            sent_count: Default::default(),
+        }
+    }
+}
+
 impl Default for SesState {
     fn default() -> Self {
         Self {

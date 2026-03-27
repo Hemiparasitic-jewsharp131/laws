@@ -47,6 +47,15 @@ pub struct CodeBuildState {
     pub builds: PersistedDashMap<CodeBuildBuild>,
 }
 
+impl CodeBuildState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            projects: PersistedDashMap::new("codebuild_projects", db),
+            builds: PersistedDashMap::new("codebuild_builds", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

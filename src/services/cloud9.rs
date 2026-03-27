@@ -38,6 +38,14 @@ pub struct Cloud9State {
     pub environments: PersistedDashMap<Environment>,
 }
 
+impl Cloud9State {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            environments: PersistedDashMap::new("cloud9_environments", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

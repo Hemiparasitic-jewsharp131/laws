@@ -49,6 +49,15 @@ pub struct DocumentDbState {
     pub instances: PersistedDashMap<DbInstance>,
 }
 
+impl DocumentDbState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            clusters: PersistedDashMap::new("documentdb_clusters", db),
+            instances: PersistedDashMap::new("documentdb_instances", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

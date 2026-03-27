@@ -32,6 +32,14 @@ pub struct MskState {
     pub clusters: PersistedDashMap<MskCluster>,
 }
 
+impl MskState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            clusters: PersistedDashMap::new("msk_clusters", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Handler
 // ---------------------------------------------------------------------------

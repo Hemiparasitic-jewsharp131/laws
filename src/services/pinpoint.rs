@@ -51,6 +51,14 @@ pub struct PinpointState {
     pub apps: PersistedDashMap<PinpointApp>,
 }
 
+impl PinpointState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            apps: PersistedDashMap::new("pinpoint_apps", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

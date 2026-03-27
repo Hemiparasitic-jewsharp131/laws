@@ -57,6 +57,16 @@ pub struct SwfState {
     pub executions: PersistedDashMap<WorkflowExecution>,
 }
 
+impl SwfState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            domains: PersistedDashMap::new("swf_domains", db),
+            workflow_types: PersistedDashMap::new("swf_workflow_types", db),
+            executions: PersistedDashMap::new("swf_executions", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

@@ -40,6 +40,14 @@ pub struct QldbState {
     pub ledgers: PersistedDashMap<QldbLedger>,
 }
 
+impl QldbState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            ledgers: PersistedDashMap::new("qldb_ledgers", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

@@ -54,6 +54,15 @@ pub struct AuditManagerState {
     pub controls: PersistedDashMap<Control>,
 }
 
+impl AuditManagerState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            assessments: PersistedDashMap::new("auditmanager_assessments", db),
+            controls: PersistedDashMap::new("auditmanager_controls", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

@@ -50,6 +50,14 @@ pub struct GuardDutyState {
     pub detectors: PersistedDashMap<Detector>,
 }
 
+impl GuardDutyState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            detectors: PersistedDashMap::new("guardduty_detectors", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

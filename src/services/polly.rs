@@ -43,6 +43,14 @@ pub struct PollyState {
     pub lexicons: PersistedDashMap<PollyLexicon>,
 }
 
+impl PollyState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            lexicons: PersistedDashMap::new("polly_lexicons", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

@@ -47,6 +47,15 @@ pub struct StepFunctionsState {
     pub executions: PersistedDashMap<Execution>,
 }
 
+impl StepFunctionsState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            state_machines: PersistedDashMap::new("stepfunctions_state_machines", db),
+            executions: PersistedDashMap::new("stepfunctions_executions", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

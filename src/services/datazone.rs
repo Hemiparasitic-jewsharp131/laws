@@ -52,6 +52,15 @@ pub struct DataZoneState {
     pub projects: PersistedDashMap<DataZoneProject>,
 }
 
+impl DataZoneState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            domains: PersistedDashMap::new("datazone_domains", db),
+            projects: PersistedDashMap::new("datazone_projects", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

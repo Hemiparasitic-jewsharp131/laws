@@ -54,6 +54,15 @@ pub struct EntityResolutionState {
     pub schema_mappings: PersistedDashMap<SchemaMapping>,
 }
 
+impl EntityResolutionState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            workflows: PersistedDashMap::new("entity_resolution_workflows", db),
+            schema_mappings: PersistedDashMap::new("entity_resolution_schema_mappings", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

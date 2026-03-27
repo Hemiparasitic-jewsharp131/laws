@@ -51,6 +51,15 @@ pub struct AmplifyState {
     pub branches: PersistedDashMap<AmplifyBranch>,
 }
 
+impl AmplifyState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            apps: PersistedDashMap::new("amplify_apps", db),
+            branches: PersistedDashMap::new("amplify_branches", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

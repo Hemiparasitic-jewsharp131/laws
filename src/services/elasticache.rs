@@ -48,6 +48,15 @@ pub struct ElastiCacheState {
     pub replication_groups: PersistedDashMap<ReplicationGroup>,
 }
 
+impl ElastiCacheState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            clusters: PersistedDashMap::new("elasticache_clusters", db),
+            replication_groups: PersistedDashMap::new("elasticache_replication_groups", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

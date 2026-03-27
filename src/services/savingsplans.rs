@@ -40,6 +40,14 @@ pub struct SavingsPlansState {
     pub plans: PersistedDashMap<SavingsPlan>,
 }
 
+impl SavingsPlansState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            plans: PersistedDashMap::new("savingsplans_plans", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Handler
 // ---------------------------------------------------------------------------

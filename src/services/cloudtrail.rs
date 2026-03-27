@@ -44,6 +44,14 @@ pub struct CloudTrailState {
     pub trails: PersistedDashMap<Trail>,
 }
 
+impl CloudTrailState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            trails: PersistedDashMap::new("cloudtrail_trails", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

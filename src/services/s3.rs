@@ -43,10 +43,10 @@ pub struct S3State {
 }
 
 impl S3State {
-    pub fn new() -> Self {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
         Self {
-            buckets: MemoryStore::new(),
-            objects: MemoryStore::new(),
+            buckets: MemoryStore::new_with_db("s3_buckets", db),
+            objects: MemoryStore::new_with_db("s3_objects", db),
         }
     }
 }

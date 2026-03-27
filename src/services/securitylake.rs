@@ -52,6 +52,15 @@ pub struct SecurityLakeState {
     pub subscribers: PersistedDashMap<Subscriber>,
 }
 
+impl SecurityLakeState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            data_lakes: PersistedDashMap::new("securitylake_data_lakes", db),
+            subscribers: PersistedDashMap::new("securitylake_subscribers", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

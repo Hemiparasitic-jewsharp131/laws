@@ -40,6 +40,14 @@ pub struct Route53DomainsState {
     pub domains: PersistedDashMap<Domain>,
 }
 
+impl Route53DomainsState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            domains: PersistedDashMap::new("route53domains_domains", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Handler
 // ---------------------------------------------------------------------------

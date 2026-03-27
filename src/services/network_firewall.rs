@@ -56,6 +56,16 @@ pub struct NetworkFirewallState {
     pub rule_groups: PersistedDashMap<RuleGroup>,
 }
 
+impl NetworkFirewallState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            firewalls: PersistedDashMap::new("network_firewall_firewalls", db),
+            policies: PersistedDashMap::new("network_firewall_policies", db),
+            rule_groups: PersistedDashMap::new("network_firewall_rule_groups", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Handler
 // ---------------------------------------------------------------------------

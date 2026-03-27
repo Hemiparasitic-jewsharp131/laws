@@ -48,6 +48,19 @@ pub struct CloudWatchLogsState {
     pub region: String,
 }
 
+impl CloudWatchLogsState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            log_groups: std::sync::Arc::new(PersistedDashMap::new(
+                "cloudwatch_logs_log_groups",
+                db,
+            )),
+            account_id: Default::default(),
+            region: Default::default(),
+        }
+    }
+}
+
 impl Default for CloudWatchLogsState {
     fn default() -> Self {
         Self {

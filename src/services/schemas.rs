@@ -50,6 +50,15 @@ pub struct SchemasState {
     pub schemas: PersistedDashMap<Schema>,
 }
 
+impl SchemasState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            registries: PersistedDashMap::new("schemas_registries", db),
+            schemas: PersistedDashMap::new("schemas_schemas", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

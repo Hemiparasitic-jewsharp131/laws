@@ -51,6 +51,19 @@ pub struct ConfigServiceState {
     pub delivery_channels: PersistedDashMap<DeliveryChannel>,
 }
 
+impl ConfigServiceState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            config_rules: PersistedDashMap::new("config_service_config_rules", db),
+            configuration_recorders: PersistedDashMap::new(
+                "config_service_configuration_recorders",
+                db,
+            ),
+            delivery_channels: PersistedDashMap::new("config_service_delivery_channels", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

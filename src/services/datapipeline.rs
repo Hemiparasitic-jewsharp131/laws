@@ -34,6 +34,14 @@ pub struct DataPipelineState {
     pub pipelines: PersistedDashMap<Pipeline>,
 }
 
+impl DataPipelineState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            pipelines: PersistedDashMap::new("datapipeline_pipelines", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

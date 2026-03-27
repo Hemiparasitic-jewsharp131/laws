@@ -61,6 +61,14 @@ pub struct WellArchitectedState {
     pub workloads: PersistedDashMap<Workload>,
 }
 
+impl WellArchitectedState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            workloads: PersistedDashMap::new("wellarchitected_workloads", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

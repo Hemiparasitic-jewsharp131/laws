@@ -35,6 +35,14 @@ pub struct MediaStoreState {
     pub containers: PersistedDashMap<Container>,
 }
 
+impl MediaStoreState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            containers: PersistedDashMap::new("mediastore_containers", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Handler
 // ---------------------------------------------------------------------------

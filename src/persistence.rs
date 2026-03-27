@@ -189,6 +189,16 @@ impl<V: Clone + Send + Sync + 'static> Default for PersistedDashMap<V> {
 impl<V: Clone + Send + Sync + serde::Serialize + serde::de::DeserializeOwned + 'static>
     PersistedDashMap<V>
 {
+    /// Create a map that is optionally backed by SQLite.
+    /// When `db` is `None`, behaves like a plain in-memory `DashMap`.
+    /// When `Some`, rehydrates from SQLite and writes through on mutations.
+    pub fn new(table: &str, db: &Option<Arc<SqliteStore>>) -> Self {
+        match db {
+            Some(db) => Self::with_persistence(table, db.clone()),
+            None => Self::default(),
+        }
+    }
+
     /// Create a persisted map that rehydrates from SQLite.
     pub fn with_persistence(table: &str, db: Arc<SqliteStore>) -> Self {
         let inner = DashMap::new();

@@ -30,6 +30,14 @@ pub struct TranslateState {
     pub terminologies: PersistedDashMap<Terminology>,
 }
 
+impl TranslateState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            terminologies: PersistedDashMap::new("translate_terminologies", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Handler
 // ---------------------------------------------------------------------------

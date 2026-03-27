@@ -39,6 +39,14 @@ pub struct CloudSearchState {
     pub domains: PersistedDashMap<Domain>,
 }
 
+impl CloudSearchState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            domains: PersistedDashMap::new("cloudsearch_domains", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

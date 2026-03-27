@@ -45,6 +45,15 @@ pub struct AccessAnalyzerState {
     pub findings: PersistedDashMap<Finding>,
 }
 
+impl AccessAnalyzerState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            analyzers: PersistedDashMap::new("accessanalyzer_analyzers", db),
+            findings: PersistedDashMap::new("accessanalyzer_findings", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

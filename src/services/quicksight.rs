@@ -48,6 +48,15 @@ pub struct QuickSightState {
     pub dashboards: PersistedDashMap<Dashboard>,
 }
 
+impl QuickSightState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            datasets: PersistedDashMap::new("quicksight_datasets", db),
+            dashboards: PersistedDashMap::new("quicksight_dashboards", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

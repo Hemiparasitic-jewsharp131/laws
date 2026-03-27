@@ -46,6 +46,15 @@ pub struct LightsailState {
     pub databases: PersistedDashMap<LightsailDatabase>,
 }
 
+impl LightsailState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            instances: PersistedDashMap::new("lightsail_instances", db),
+            databases: PersistedDashMap::new("lightsail_databases", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Handler
 // ---------------------------------------------------------------------------

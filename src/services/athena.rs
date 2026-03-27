@@ -45,6 +45,15 @@ pub struct AthenaState {
     pub query_executions: PersistedDashMap<QueryExecution>,
 }
 
+impl AthenaState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            work_groups: PersistedDashMap::new("athena_work_groups", db),
+            query_executions: PersistedDashMap::new("athena_query_executions", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

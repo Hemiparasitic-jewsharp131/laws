@@ -41,6 +41,14 @@ pub struct EfsState {
     pub file_systems: PersistedDashMap<FileSystem>,
 }
 
+impl EfsState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            file_systems: PersistedDashMap::new("efs_file_systems", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

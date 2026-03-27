@@ -53,6 +53,16 @@ pub struct AppStreamState {
     pub image_builders: PersistedDashMap<ImageBuilder>,
 }
 
+impl AppStreamState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            fleets: PersistedDashMap::new("appstream_fleets", db),
+            stacks: PersistedDashMap::new("appstream_stacks", db),
+            image_builders: PersistedDashMap::new("appstream_image_builders", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

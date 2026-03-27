@@ -41,6 +41,14 @@ pub struct AppSyncState {
     pub apis: PersistedDashMap<GraphqlApi>,
 }
 
+impl AppSyncState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            apis: PersistedDashMap::new("appsync_apis", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

@@ -35,6 +35,14 @@ pub struct FirehoseState {
     pub streams: PersistedDashMap<DeliveryStream>,
 }
 
+impl FirehoseState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            streams: PersistedDashMap::new("firehose_streams", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

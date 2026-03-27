@@ -48,6 +48,15 @@ pub struct NeptuneState {
     pub instances: PersistedDashMap<NeptuneInstance>,
 }
 
+impl NeptuneState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            clusters: PersistedDashMap::new("neptune_clusters", db),
+            instances: PersistedDashMap::new("neptune_instances", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Handler
 // ---------------------------------------------------------------------------

@@ -63,6 +63,15 @@ pub struct AppMeshState {
     pub virtual_nodes: PersistedDashMap<VirtualNode>,
 }
 
+impl AppMeshState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            meshes: PersistedDashMap::new("appmesh_meshes", db),
+            virtual_nodes: PersistedDashMap::new("appmesh_virtual_nodes", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

@@ -43,6 +43,14 @@ pub struct MqState {
     pub brokers: PersistedDashMap<MqBroker>,
 }
 
+impl MqState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            brokers: PersistedDashMap::new("mq_brokers", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

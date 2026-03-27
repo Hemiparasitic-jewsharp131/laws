@@ -50,6 +50,15 @@ pub struct OmicsState {
     pub workflows: PersistedDashMap<Workflow>,
 }
 
+impl OmicsState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            sequence_stores: PersistedDashMap::new("omics_sequence_stores", db),
+            workflows: PersistedDashMap::new("omics_workflows", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

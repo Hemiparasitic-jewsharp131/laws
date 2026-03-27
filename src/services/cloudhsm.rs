@@ -50,6 +50,14 @@ pub struct CloudHsmState {
     pub clusters: PersistedDashMap<Cluster>,
 }
 
+impl CloudHsmState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            clusters: PersistedDashMap::new("cloudhsm_clusters", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

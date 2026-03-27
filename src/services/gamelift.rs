@@ -65,6 +65,17 @@ pub struct GameLiftState {
     pub matchmaking_configs: PersistedDashMap<MatchmakingConfiguration>,
 }
 
+impl GameLiftState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            fleets: PersistedDashMap::new("gamelift_fleets", db),
+            game_sessions: PersistedDashMap::new("gamelift_game_sessions", db),
+            queues: PersistedDashMap::new("gamelift_queues", db),
+            matchmaking_configs: PersistedDashMap::new("gamelift_matchmaking_configs", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Handler
 // ---------------------------------------------------------------------------

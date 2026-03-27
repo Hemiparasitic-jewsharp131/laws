@@ -38,6 +38,15 @@ impl Default for SsmState {
     }
 }
 
+impl SsmState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            parameters: MemoryStore::new_with_db("ssm_parameters", db),
+            ..Default::default()
+        }
+    }
+}
+
 pub fn router(state: Arc<SsmState>) -> Router {
     Router::new()
         .route("/", post(handle_action))

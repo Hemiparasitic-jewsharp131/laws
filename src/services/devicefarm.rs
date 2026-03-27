@@ -42,6 +42,15 @@ pub struct DeviceFarmState {
     pub uploads: PersistedDashMap<Upload>,
 }
 
+impl DeviceFarmState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            projects: PersistedDashMap::new("devicefarm_projects", db),
+            uploads: PersistedDashMap::new("devicefarm_uploads", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

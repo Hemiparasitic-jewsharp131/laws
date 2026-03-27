@@ -74,10 +74,14 @@ impl Default for Ec2State {
 }
 
 impl Ec2State {
-    pub fn new(owner_id: String, region: String) -> Self {
+    pub fn new(
+        owner_id: String,
+        region: String,
+        db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>,
+    ) -> Self {
         Self {
-            instances: Arc::new(PersistedDashMap::default()),
-            reservations: Arc::new(PersistedDashMap::default()),
+            instances: Arc::new(PersistedDashMap::new("ec2_instances", db)),
+            reservations: Arc::new(PersistedDashMap::new("ec2_reservations", db)),
             owner_id,
             region,
         }

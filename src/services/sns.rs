@@ -47,10 +47,10 @@ pub struct SnsState {
 }
 
 impl SnsState {
-    pub fn new() -> Self {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
         Self {
-            topics: MemoryStore::new(),
-            subscriptions: MemoryStore::new(),
+            topics: MemoryStore::new_with_db("sns_topics", db),
+            subscriptions: MemoryStore::new_with_db("sns_subscriptions", db),
         }
     }
 }

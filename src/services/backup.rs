@@ -48,6 +48,15 @@ pub struct BackupState {
     pub plans: PersistedDashMap<BackupPlan>,
 }
 
+impl BackupState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            vaults: PersistedDashMap::new("backup_vaults", db),
+            plans: PersistedDashMap::new("backup_plans", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

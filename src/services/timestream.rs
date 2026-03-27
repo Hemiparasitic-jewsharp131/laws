@@ -49,6 +49,15 @@ pub struct TimestreamState {
     pub tables: PersistedDashMap<TimestreamTable>,
 }
 
+impl TimestreamState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            databases: PersistedDashMap::new("timestream_databases", db),
+            tables: PersistedDashMap::new("timestream_tables", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

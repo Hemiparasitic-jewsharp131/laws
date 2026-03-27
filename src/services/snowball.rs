@@ -50,6 +50,15 @@ pub struct SnowballState {
     pub clusters: PersistedDashMap<SnowballCluster>,
 }
 
+impl SnowballState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            jobs: PersistedDashMap::new("snowball_jobs", db),
+            clusters: PersistedDashMap::new("snowball_clusters", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Handler
 // ---------------------------------------------------------------------------

@@ -43,6 +43,15 @@ pub struct IdentityStoreState {
     pub groups: PersistedDashMap<Group>,
 }
 
+impl IdentityStoreState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            users: PersistedDashMap::new("identitystore_users", db),
+            groups: PersistedDashMap::new("identitystore_groups", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Handler
 // ---------------------------------------------------------------------------

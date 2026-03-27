@@ -41,6 +41,15 @@ pub struct StorageGatewayState {
     pub volumes: PersistedDashMap<Volume>,
 }
 
+impl StorageGatewayState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            gateways: PersistedDashMap::new("storage_gateway_gateways", db),
+            volumes: PersistedDashMap::new("storage_gateway_volumes", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Handler
 // ---------------------------------------------------------------------------

@@ -36,6 +36,14 @@ pub struct AppRunnerState {
     pub services: PersistedDashMap<AppRunnerService>,
 }
 
+impl AppRunnerState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            services: PersistedDashMap::new("apprunner_services", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

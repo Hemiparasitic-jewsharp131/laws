@@ -45,6 +45,15 @@ pub struct ResilienceHubState {
     pub policies: PersistedDashMap<ResiliencyPolicy>,
 }
 
+impl ResilienceHubState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            apps: PersistedDashMap::new("resiliencehub_apps", db),
+            policies: PersistedDashMap::new("resiliencehub_policies", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Handler
 // ---------------------------------------------------------------------------

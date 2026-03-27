@@ -20,6 +20,14 @@ pub struct ComputeOptimizerState {
     pub enrolled: AtomicBool,
 }
 
+impl ComputeOptimizerState {
+    pub fn new(_db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            enrolled: Default::default(),
+        }
+    }
+}
+
 impl Default for ComputeOptimizerState {
     fn default() -> Self {
         Self {

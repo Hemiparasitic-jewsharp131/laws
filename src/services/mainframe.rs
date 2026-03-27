@@ -52,6 +52,15 @@ pub struct MainframeState {
     pub environments: PersistedDashMap<Environment>,
 }
 
+impl MainframeState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            applications: PersistedDashMap::new("mainframe_applications", db),
+            environments: PersistedDashMap::new("mainframe_environments", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

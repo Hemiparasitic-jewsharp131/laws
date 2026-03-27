@@ -70,6 +70,16 @@ impl Default for IamState {
     }
 }
 
+impl IamState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            users: MemoryStore::new_with_db("iam_users", db),
+            roles: MemoryStore::new_with_db("iam_roles", db),
+            policies: MemoryStore::new_with_db("iam_policies", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

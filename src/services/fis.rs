@@ -59,6 +59,15 @@ pub struct FisState {
     pub experiments: PersistedDashMap<Experiment>,
 }
 
+impl FisState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            templates: PersistedDashMap::new("fis_templates", db),
+            experiments: PersistedDashMap::new("fis_experiments", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

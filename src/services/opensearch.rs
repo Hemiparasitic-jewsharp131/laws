@@ -41,6 +41,14 @@ pub struct OpenSearchState {
     pub domains: PersistedDashMap<OpenSearchDomain>,
 }
 
+impl OpenSearchState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            domains: PersistedDashMap::new("opensearch_domains", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

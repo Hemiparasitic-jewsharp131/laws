@@ -37,6 +37,15 @@ pub struct XRayState {
     pub traces_count: std::sync::atomic::AtomicU64,
 }
 
+impl XRayState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            groups: PersistedDashMap::new("xray_groups", db),
+            traces_count: Default::default(),
+        }
+    }
+}
+
 impl Default for XRayState {
     fn default() -> Self {
         Self {

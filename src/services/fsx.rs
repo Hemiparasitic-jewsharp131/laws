@@ -47,6 +47,15 @@ pub struct FsxState {
     pub backups: PersistedDashMap<FsxBackup>,
 }
 
+impl FsxState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            file_systems: PersistedDashMap::new("fsx_file_systems", db),
+            backups: PersistedDashMap::new("fsx_backups", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

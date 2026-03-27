@@ -41,6 +41,18 @@ pub struct FirewallManagerState {
     pub notification_channel: PersistedDashMap<NotificationChannel>,
 }
 
+impl FirewallManagerState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            policies: PersistedDashMap::new("firewall_manager_policies", db),
+            notification_channel: PersistedDashMap::new(
+                "firewall_manager_notification_channel",
+                db,
+            ),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

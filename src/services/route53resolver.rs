@@ -50,6 +50,15 @@ pub struct Route53ResolverState {
     pub rules: PersistedDashMap<ResolverRule>,
 }
 
+impl Route53ResolverState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            endpoints: PersistedDashMap::new("route53resolver_endpoints", db),
+            rules: PersistedDashMap::new("route53resolver_rules", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Handler
 // ---------------------------------------------------------------------------

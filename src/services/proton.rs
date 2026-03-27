@@ -41,6 +41,15 @@ pub struct ProtonState {
     pub services: PersistedDashMap<ProtonService>,
 }
 
+impl ProtonState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            environments: PersistedDashMap::new("proton_environments", db),
+            services: PersistedDashMap::new("proton_services", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Handler
 // ---------------------------------------------------------------------------

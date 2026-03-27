@@ -53,6 +53,15 @@ pub struct DataExchangeState {
     pub revisions: PersistedDashMap<Revision>,
 }
 
+impl DataExchangeState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            datasets: PersistedDashMap::new("dataexchange_datasets", db),
+            revisions: PersistedDashMap::new("dataexchange_revisions", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

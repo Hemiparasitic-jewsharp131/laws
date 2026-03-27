@@ -30,6 +30,14 @@ pub struct ComprehendState {
     pub jobs: PersistedDashMap<ComprehendJob>,
 }
 
+impl ComprehendState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            jobs: PersistedDashMap::new("comprehend_jobs", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Handler
 // ---------------------------------------------------------------------------

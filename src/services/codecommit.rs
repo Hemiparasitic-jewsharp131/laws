@@ -37,6 +37,14 @@ pub struct CodeCommitState {
     pub repositories: PersistedDashMap<Repository>,
 }
 
+impl CodeCommitState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            repositories: PersistedDashMap::new("codecommit_repositories", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

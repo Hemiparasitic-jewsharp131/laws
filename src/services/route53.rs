@@ -42,6 +42,15 @@ pub struct Route53State {
     pub record_sets: PersistedDashMap<Vec<ResourceRecordSet>>,
 }
 
+impl Route53State {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            zones: PersistedDashMap::new("route53_zones", db),
+            record_sets: PersistedDashMap::new("route53_record_sets", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

@@ -35,6 +35,14 @@ pub struct CodeGuruState {
     pub profiling_groups: PersistedDashMap<ProfilingGroup>,
 }
 
+impl CodeGuruState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            profiling_groups: PersistedDashMap::new("codeguru_profiling_groups", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

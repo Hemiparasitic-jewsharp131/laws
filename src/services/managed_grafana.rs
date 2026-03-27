@@ -42,6 +42,14 @@ pub struct ManagedGrafanaState {
     pub workspaces: PersistedDashMap<Workspace>,
 }
 
+impl ManagedGrafanaState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            workspaces: PersistedDashMap::new("managed_grafana_workspaces", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

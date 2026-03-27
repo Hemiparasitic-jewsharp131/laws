@@ -40,6 +40,15 @@ pub struct SsoState {
     pub account_assignments: PersistedDashMap<AccountAssignment>,
 }
 
+impl SsoState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            permission_sets: PersistedDashMap::new("sso_permission_sets", db),
+            account_assignments: PersistedDashMap::new("sso_account_assignments", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Handler
 // ---------------------------------------------------------------------------

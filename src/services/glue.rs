@@ -52,6 +52,16 @@ pub struct GlueState {
     pub crawlers: PersistedDashMap<GlueCrawler>,
 }
 
+impl GlueState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            databases: PersistedDashMap::new("glue_databases", db),
+            tables: PersistedDashMap::new("glue_tables", db),
+            crawlers: PersistedDashMap::new("glue_crawlers", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

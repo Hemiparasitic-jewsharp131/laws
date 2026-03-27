@@ -47,6 +47,16 @@ pub struct PersonalizeState {
     pub campaigns: PersistedDashMap<Campaign>,
 }
 
+impl PersonalizeState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            datasets: PersistedDashMap::new("personalize_datasets", db),
+            solutions: PersistedDashMap::new("personalize_solutions", db),
+            campaigns: PersistedDashMap::new("personalize_campaigns", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Handler
 // ---------------------------------------------------------------------------

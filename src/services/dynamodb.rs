@@ -44,6 +44,14 @@ pub struct DynamoDbState {
     pub tables: PersistedDashMap<DynamoTable>,
 }
 
+impl DynamoDbState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            tables: PersistedDashMap::new("dynamodb_tables", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

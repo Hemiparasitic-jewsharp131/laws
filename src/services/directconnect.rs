@@ -46,6 +46,15 @@ pub struct DirectConnectState {
     pub virtual_interfaces: PersistedDashMap<VirtualInterface>,
 }
 
+impl DirectConnectState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            connections: PersistedDashMap::new("directconnect_connections", db),
+            virtual_interfaces: PersistedDashMap::new("directconnect_virtual_interfaces", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

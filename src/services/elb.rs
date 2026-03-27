@@ -51,6 +51,15 @@ pub struct ElbState {
     pub target_groups: PersistedDashMap<TargetGroup>,
 }
 
+impl ElbState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            load_balancers: PersistedDashMap::new("elb_load_balancers", db),
+            target_groups: PersistedDashMap::new("elb_target_groups", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

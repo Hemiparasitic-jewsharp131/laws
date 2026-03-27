@@ -57,6 +57,15 @@ pub struct EmrServerlessState {
     pub job_runs: PersistedDashMap<JobRun>,
 }
 
+impl EmrServerlessState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            applications: PersistedDashMap::new("emr_serverless_applications", db),
+            job_runs: PersistedDashMap::new("emr_serverless_job_runs", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

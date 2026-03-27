@@ -41,6 +41,14 @@ pub struct ServerlessRepoState {
     pub applications: PersistedDashMap<Application>,
 }
 
+impl ServerlessRepoState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            applications: PersistedDashMap::new("serverlessrepo_applications", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

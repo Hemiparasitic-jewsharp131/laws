@@ -43,6 +43,15 @@ pub struct EcrState {
     pub images: PersistedDashMap<Vec<EcrImage>>,
 }
 
+impl EcrState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            repositories: PersistedDashMap::new("ecr_repositories", db),
+            images: PersistedDashMap::new("ecr_images", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

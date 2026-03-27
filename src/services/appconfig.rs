@@ -55,6 +55,16 @@ pub struct AppConfigState {
     pub profiles: PersistedDashMap<AppConfigProfile>,
 }
 
+impl AppConfigState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            applications: PersistedDashMap::new("appconfig_applications", db),
+            environments: PersistedDashMap::new("appconfig_environments", db),
+            profiles: PersistedDashMap::new("appconfig_profiles", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

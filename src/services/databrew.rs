@@ -58,6 +58,16 @@ pub struct DataBrewState {
     pub datasets: PersistedDashMap<Dataset>,
 }
 
+impl DataBrewState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            projects: PersistedDashMap::new("databrew_projects", db),
+            recipes: PersistedDashMap::new("databrew_recipes", db),
+            datasets: PersistedDashMap::new("databrew_datasets", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

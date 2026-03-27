@@ -45,6 +45,15 @@ pub struct IvsState {
     pub stream_keys: PersistedDashMap<StreamKey>,
 }
 
+impl IvsState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            channels: PersistedDashMap::new("ivs_channels", db),
+            stream_keys: PersistedDashMap::new("ivs_stream_keys", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Handler
 // ---------------------------------------------------------------------------

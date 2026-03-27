@@ -45,6 +45,15 @@ pub struct IotState {
     pub policies: PersistedDashMap<IotPolicy>,
 }
 
+impl IotState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            things: PersistedDashMap::new("iot_things", db),
+            policies: PersistedDashMap::new("iot_policies", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

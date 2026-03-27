@@ -50,6 +50,15 @@ pub struct ConnectState {
     pub contact_flows: PersistedDashMap<ContactFlow>,
 }
 
+impl ConnectState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            instances: PersistedDashMap::new("connect_instances", db),
+            contact_flows: PersistedDashMap::new("connect_contact_flows", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

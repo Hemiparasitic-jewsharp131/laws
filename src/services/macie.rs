@@ -41,6 +41,14 @@ pub struct MacieState {
     pub classification_jobs: PersistedDashMap<ClassificationJob>,
 }
 
+impl MacieState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            classification_jobs: PersistedDashMap::new("macie_classification_jobs", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

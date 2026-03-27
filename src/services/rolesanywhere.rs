@@ -57,6 +57,15 @@ pub struct RolesAnywhereState {
     pub profiles: PersistedDashMap<Profile>,
 }
 
+impl RolesAnywhereState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            trust_anchors: PersistedDashMap::new("rolesanywhere_trust_anchors", db),
+            profiles: PersistedDashMap::new("rolesanywhere_profiles", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

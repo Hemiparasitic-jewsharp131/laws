@@ -54,6 +54,15 @@ pub struct CleanRoomsState {
     pub memberships: PersistedDashMap<Membership>,
 }
 
+impl CleanRoomsState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            collaborations: PersistedDashMap::new("cleanrooms_collaborations", db),
+            memberships: PersistedDashMap::new("cleanrooms_memberships", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

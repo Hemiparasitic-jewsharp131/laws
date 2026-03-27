@@ -37,6 +37,14 @@ pub struct DaxState {
     pub clusters: PersistedDashMap<DaxCluster>,
 }
 
+impl DaxState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            clusters: PersistedDashMap::new("dax_clusters", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

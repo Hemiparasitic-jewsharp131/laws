@@ -45,6 +45,15 @@ pub struct MemoryDbState {
     pub snapshots: PersistedDashMap<MemoryDbSnapshot>,
 }
 
+impl MemoryDbState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            clusters: PersistedDashMap::new("memorydb_clusters", db),
+            snapshots: PersistedDashMap::new("memorydb_snapshots", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Handler
 // ---------------------------------------------------------------------------

@@ -52,6 +52,15 @@ pub struct BraketState {
     pub devices: PersistedDashMap<Device>,
 }
 
+impl BraketState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            quantum_tasks: PersistedDashMap::new("braket_quantum_tasks", db),
+            devices: PersistedDashMap::new("braket_devices", db),
+        }
+    }
+}
+
 impl Default for BraketState {
     fn default() -> Self {
         let devices = PersistedDashMap::default();

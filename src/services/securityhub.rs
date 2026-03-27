@@ -42,6 +42,15 @@ pub struct SecurityHubState {
     pub findings: PersistedDashMap<SecurityHubFinding>,
 }
 
+impl SecurityHubState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            hub_enabled: PersistedDashMap::new("securityhub_hub_enabled", db),
+            findings: PersistedDashMap::new("securityhub_findings", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

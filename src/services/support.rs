@@ -42,6 +42,14 @@ pub struct SupportState {
     pub cases: PersistedDashMap<SupportCase>,
 }
 
+impl SupportState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            cases: PersistedDashMap::new("support_cases", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Handler
 // ---------------------------------------------------------------------------

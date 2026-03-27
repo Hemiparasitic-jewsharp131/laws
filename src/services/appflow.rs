@@ -36,6 +36,14 @@ pub struct AppFlowState {
     pub flows: PersistedDashMap<Flow>,
 }
 
+impl AppFlowState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            flows: PersistedDashMap::new("appflow_flows", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

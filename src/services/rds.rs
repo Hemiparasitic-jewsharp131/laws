@@ -49,6 +49,15 @@ pub struct RdsState {
     pub clusters: PersistedDashMap<DbCluster>,
 }
 
+impl RdsState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            instances: PersistedDashMap::new("rds_instances", db),
+            clusters: PersistedDashMap::new("rds_clusters", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

@@ -49,6 +49,15 @@ pub struct MediaPackageState {
     pub origin_endpoints: PersistedDashMap<OriginEndpoint>,
 }
 
+impl MediaPackageState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            channels: PersistedDashMap::new("mediapackage_channels", db),
+            origin_endpoints: PersistedDashMap::new("mediapackage_origin_endpoints", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

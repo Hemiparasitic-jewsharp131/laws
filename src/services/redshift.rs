@@ -37,6 +37,14 @@ pub struct RedshiftState {
     pub clusters: PersistedDashMap<RedshiftCluster>,
 }
 
+impl RedshiftState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            clusters: PersistedDashMap::new("redshift_clusters", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

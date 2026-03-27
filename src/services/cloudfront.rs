@@ -40,6 +40,14 @@ pub struct CloudFrontState {
     pub distributions: PersistedDashMap<Distribution>,
 }
 
+impl CloudFrontState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            distributions: PersistedDashMap::new("cloudfront_distributions", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

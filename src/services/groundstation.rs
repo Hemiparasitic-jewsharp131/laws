@@ -47,6 +47,15 @@ pub struct GroundStationState {
     pub configs: PersistedDashMap<Config>,
 }
 
+impl GroundStationState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            satellites: PersistedDashMap::new("groundstation_satellites", db),
+            configs: PersistedDashMap::new("groundstation_configs", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

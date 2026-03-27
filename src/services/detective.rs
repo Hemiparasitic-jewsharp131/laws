@@ -46,6 +46,15 @@ pub struct DetectiveState {
     pub members: PersistedDashMap<DetectiveMember>,
 }
 
+impl DetectiveState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            graphs: PersistedDashMap::new("detective_graphs", db),
+            members: PersistedDashMap::new("detective_members", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

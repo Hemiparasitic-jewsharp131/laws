@@ -39,6 +39,15 @@ impl Default for SecretsManagerState {
     }
 }
 
+impl SecretsManagerState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            secrets: MemoryStore::new_with_db("secretsmanager_secrets", db),
+            ..Default::default()
+        }
+    }
+}
+
 pub fn router(state: Arc<SecretsManagerState>) -> Router {
     Router::new()
         .route("/", post(handle_action))

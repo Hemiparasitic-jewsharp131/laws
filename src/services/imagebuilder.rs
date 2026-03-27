@@ -60,6 +60,16 @@ pub struct ImageBuilderState {
     pub pipelines: PersistedDashMap<ImagePipeline>,
 }
 
+impl ImageBuilderState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            images: PersistedDashMap::new("imagebuilder_images", db),
+            components: PersistedDashMap::new("imagebuilder_components", db),
+            pipelines: PersistedDashMap::new("imagebuilder_pipelines", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

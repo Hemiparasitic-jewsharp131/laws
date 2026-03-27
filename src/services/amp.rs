@@ -53,6 +53,14 @@ pub struct AmpState {
     pub workspaces: PersistedDashMap<Workspace>,
 }
 
+impl AmpState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            workspaces: PersistedDashMap::new("amp_workspaces", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

@@ -36,6 +36,14 @@ pub struct HealthState {
     pub events: PersistedDashMap<HealthEvent>,
 }
 
+impl HealthState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            events: PersistedDashMap::new("health_events", db),
+        }
+    }
+}
+
 impl Default for HealthState {
     fn default() -> Self {
         let events = PersistedDashMap::default();

@@ -61,6 +61,16 @@ pub struct NetworkManagerState {
     pub devices: PersistedDashMap<Device>,
 }
 
+impl NetworkManagerState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            global_networks: PersistedDashMap::new("networkmanager_global_networks", db),
+            sites: PersistedDashMap::new("networkmanager_sites", db),
+            devices: PersistedDashMap::new("networkmanager_devices", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

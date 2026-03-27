@@ -41,6 +41,15 @@ pub struct ShieldState {
     pub subscription: PersistedDashMap<Subscription>,
 }
 
+impl ShieldState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            protections: PersistedDashMap::new("shield_protections", db),
+            subscription: PersistedDashMap::new("shield_subscription", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Handler
 // ---------------------------------------------------------------------------

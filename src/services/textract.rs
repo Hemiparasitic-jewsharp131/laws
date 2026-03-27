@@ -28,6 +28,14 @@ pub struct TextractState {
     pub jobs: PersistedDashMap<TextractJob>,
 }
 
+impl TextractState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            jobs: PersistedDashMap::new("textract_jobs", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Handler
 // ---------------------------------------------------------------------------

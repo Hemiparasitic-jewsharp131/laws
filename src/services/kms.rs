@@ -39,6 +39,15 @@ pub struct KmsState {
     pub aliases: Arc<PersistedDashMap<KmsAlias>>,
 }
 
+impl KmsState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            keys: std::sync::Arc::new(PersistedDashMap::new("kms_keys", db)),
+            aliases: std::sync::Arc::new(PersistedDashMap::new("kms_aliases", db)),
+        }
+    }
+}
+
 impl Default for KmsState {
     fn default() -> Self {
         Self {

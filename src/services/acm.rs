@@ -27,6 +27,14 @@ pub struct AcmState {
     pub certificates: Arc<PersistedDashMap<AcmCertificate>>,
 }
 
+impl AcmState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            certificates: std::sync::Arc::new(PersistedDashMap::new("acm_certificates", db)),
+        }
+    }
+}
+
 impl Default for AcmState {
     fn default() -> Self {
         Self {

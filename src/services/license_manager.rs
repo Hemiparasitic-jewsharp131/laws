@@ -47,6 +47,15 @@ pub struct LicenseManagerState {
     pub configurations: PersistedDashMap<LicenseConfiguration>,
 }
 
+impl LicenseManagerState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            licenses: PersistedDashMap::new("license_manager_licenses", db),
+            configurations: PersistedDashMap::new("license_manager_configurations", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Handler
 // ---------------------------------------------------------------------------

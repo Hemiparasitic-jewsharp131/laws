@@ -44,6 +44,14 @@ pub struct SyntheticsState {
     pub canaries: PersistedDashMap<Canary>,
 }
 
+impl SyntheticsState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            canaries: PersistedDashMap::new("synthetics_canaries", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

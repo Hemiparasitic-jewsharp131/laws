@@ -52,9 +52,9 @@ pub struct SqsState {
 }
 
 impl SqsState {
-    pub fn new() -> Self {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
         Self {
-            queues: Arc::new(PersistedDashMap::default()),
+            queues: Arc::new(PersistedDashMap::new("sqs_queues", db)),
         }
     }
 }

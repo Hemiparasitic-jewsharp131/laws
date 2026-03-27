@@ -31,6 +31,14 @@ pub struct RamState {
     pub resource_shares: PersistedDashMap<ResourceShare>,
 }
 
+impl RamState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            resource_shares: PersistedDashMap::new("ram_resource_shares", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Handler
 // ---------------------------------------------------------------------------

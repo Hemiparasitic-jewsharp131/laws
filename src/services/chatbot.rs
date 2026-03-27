@@ -51,6 +51,15 @@ pub struct ChatbotState {
     pub teams_configs: PersistedDashMap<TeamsChannelConfiguration>,
 }
 
+impl ChatbotState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            slack_configs: PersistedDashMap::new("chatbot_slack_configs", db),
+            teams_configs: PersistedDashMap::new("chatbot_teams_configs", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

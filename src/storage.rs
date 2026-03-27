@@ -7,10 +7,7 @@ pub mod mem {
     #[derive(Clone)]
     pub struct MemoryStore<V: Clone + Send + Sync + 'static> {
         data: Arc<DashMap<String, V>>,
-        /// Optional persistence backend. When present, every mutation is
-        /// written through to SQLite and the store is rehydrated on creation.
         db: Option<Arc<SqliteStore>>,
-        /// Logical table name used as the SQLite table.
         table: String,
     }
 
@@ -24,17 +21,9 @@ pub mod mem {
         }
     }
 
-    // Core operations that do NOT require Serialize/Deserialize.
-    // These work for all existing services unchanged.
     impl<V: Clone + Send + Sync + 'static> MemoryStore<V> {
         pub fn new() -> Self {
             Self::default()
-        }
-
-        pub fn insert(&self, key: String, value: V) {
-            // Note: persistence write-through happens via `insert_persist`
-            // for types that implement Serialize. Plain `insert` always works.
-            self.data.insert(key, value);
         }
 
         pub fn get(&self, key: &str) -> Option<V> {
@@ -75,13 +64,19 @@ pub mod mem {
         }
     }
 
-    // Persistence-specific constructor that requires Serialize + DeserializeOwned.
     impl<V: Clone + Send + Sync + serde::Serialize + serde::de::DeserializeOwned + 'static>
         MemoryStore<V>
     {
-        /// Insert with persistence write-through. For types that implement
-        /// Serialize, this also writes the value to SQLite.
-        pub fn insert_persist(&self, key: String, value: V) {
+        /// Create optionally persistence-backed store.
+        pub fn new_with_db(table: &str, db: &Option<Arc<SqliteStore>>) -> Self {
+            match db {
+                Some(db) => Self::with_persistence(table, db.clone()),
+                None => Self::default(),
+            }
+        }
+
+        /// Insert with write-through to SQLite if persistence is enabled.
+        pub fn insert(&self, key: String, value: V) {
             if let Some(ref db) = self.db {
                 if let Ok(json) = serde_json::to_string(&value) {
                     let _ = db.put(&self.table, &key, &json);
@@ -90,12 +85,9 @@ pub mod mem {
             self.data.insert(key, value);
         }
 
-        /// Create a persistence-backed store. All existing rows are loaded
-        /// into the in-memory map on construction.
+        /// Create a persistence-backed store, rehydrating from SQLite.
         pub fn with_persistence(table: &str, db: Arc<SqliteStore>) -> Self {
             let data = Arc::new(DashMap::new());
-
-            // Rehydrate from SQLite
             if let Ok(rows) = db.list(table) {
                 for (key, json) in rows {
                     if let Ok(val) = serde_json::from_str::<V>(&json) {
@@ -103,7 +95,6 @@ pub mod mem {
                     }
                 }
             }
-
             Self {
                 data,
                 db: Some(db),

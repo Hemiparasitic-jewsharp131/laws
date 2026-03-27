@@ -44,6 +44,14 @@ pub struct RumState {
     pub app_monitors: PersistedDashMap<AppMonitor>,
 }
 
+impl RumState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            app_monitors: PersistedDashMap::new("rum_app_monitors", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

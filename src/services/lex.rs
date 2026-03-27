@@ -50,6 +50,15 @@ pub struct LexState {
     pub intents: PersistedDashMap<LexIntent>,
 }
 
+impl LexState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            bots: PersistedDashMap::new("lex_bots", db),
+            intents: PersistedDashMap::new("lex_intents", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

@@ -43,6 +43,15 @@ pub struct EventBridgeState {
     pub rules: PersistedDashMap<EventRule>,
 }
 
+impl EventBridgeState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            buses: PersistedDashMap::new("eventbridge_buses", db),
+            rules: PersistedDashMap::new("eventbridge_rules", db),
+        }
+    }
+}
+
 impl Default for EventBridgeState {
     fn default() -> Self {
         let buses = PersistedDashMap::default();

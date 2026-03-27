@@ -35,6 +35,14 @@ pub struct DirectoryServiceState {
     pub directories: PersistedDashMap<Directory>,
 }
 
+impl DirectoryServiceState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            directories: PersistedDashMap::new("directory_service_directories", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

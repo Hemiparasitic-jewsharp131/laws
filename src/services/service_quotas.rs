@@ -48,6 +48,15 @@ pub struct ServiceQuotasState {
     pub requests: PersistedDashMap<QuotaChangeRequest>,
 }
 
+impl ServiceQuotasState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            quotas: PersistedDashMap::new("service_quotas_quotas", db),
+            requests: PersistedDashMap::new("service_quotas_requests", db),
+        }
+    }
+}
+
 impl Default for ServiceQuotasState {
     fn default() -> Self {
         let state = Self {

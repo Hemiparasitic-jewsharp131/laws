@@ -51,6 +51,15 @@ pub struct CodeDeployState {
     pub deployment_groups: PersistedDashMap<DeploymentGroup>,
 }
 
+impl CodeDeployState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            applications: PersistedDashMap::new("codedeploy_applications", db),
+            deployment_groups: PersistedDashMap::new("codedeploy_deployment_groups", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

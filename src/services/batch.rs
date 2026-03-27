@@ -59,6 +59,16 @@ pub struct BatchState {
     pub jobs: PersistedDashMap<BatchJob>,
 }
 
+impl BatchState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            compute_environments: PersistedDashMap::new("batch_compute_environments", db),
+            job_queues: PersistedDashMap::new("batch_job_queues", db),
+            jobs: PersistedDashMap::new("batch_jobs", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

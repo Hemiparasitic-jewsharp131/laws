@@ -29,6 +29,14 @@ pub struct RekognitionState {
     pub collections: PersistedDashMap<RekCollection>,
 }
 
+impl RekognitionState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            collections: PersistedDashMap::new("rekognition_collections", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Handler
 // ---------------------------------------------------------------------------

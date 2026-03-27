@@ -48,6 +48,15 @@ pub struct DevOpsGuruState {
     pub insights: PersistedDashMap<Insight>,
 }
 
+impl DevOpsGuruState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            channels: PersistedDashMap::new("devopsguru_channels", db),
+            insights: PersistedDashMap::new("devopsguru_insights", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

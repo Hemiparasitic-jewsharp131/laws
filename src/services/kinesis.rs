@@ -39,6 +39,15 @@ pub struct KinesisState {
     sequence_counter: AtomicU64,
 }
 
+impl KinesisState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            streams: PersistedDashMap::new("kinesis_streams", db),
+            sequence_counter: AtomicU64::new(0),
+        }
+    }
+}
+
 impl Default for KinesisState {
     fn default() -> Self {
         Self {

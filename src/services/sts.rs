@@ -15,6 +15,15 @@ pub struct StsState {
     pub region: String,
 }
 
+impl StsState {
+    pub fn new(_db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            account_id: Default::default(),
+            region: Default::default(),
+        }
+    }
+}
+
 impl Default for StsState {
     fn default() -> Self {
         Self {

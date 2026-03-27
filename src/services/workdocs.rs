@@ -66,6 +66,16 @@ pub struct WorkDocsState {
     pub users: PersistedDashMap<User>,
 }
 
+impl WorkDocsState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            folders: PersistedDashMap::new("workdocs_folders", db),
+            documents: PersistedDashMap::new("workdocs_documents", db),
+            users: PersistedDashMap::new("workdocs_users", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

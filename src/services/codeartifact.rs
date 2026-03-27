@@ -50,6 +50,15 @@ pub struct CodeArtifactState {
     pub repositories: PersistedDashMap<CodeArtifactRepository>,
 }
 
+impl CodeArtifactState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            domains: PersistedDashMap::new("codeartifact_domains", db),
+            repositories: PersistedDashMap::new("codeartifact_repositories", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Query params
 // ---------------------------------------------------------------------------

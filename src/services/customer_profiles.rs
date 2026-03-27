@@ -50,6 +50,15 @@ pub struct CustomerProfilesState {
     pub profiles: PersistedDashMap<Profile>,
 }
 
+impl CustomerProfilesState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            domains: PersistedDashMap::new("customer_profiles_domains", db),
+            profiles: PersistedDashMap::new("customer_profiles_profiles", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

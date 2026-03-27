@@ -42,6 +42,14 @@ pub struct EksState {
     pub clusters: PersistedDashMap<EksCluster>,
 }
 
+impl EksState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            clusters: PersistedDashMap::new("eks_clusters", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

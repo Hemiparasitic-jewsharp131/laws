@@ -196,280 +196,287 @@ fn build_router(
     _db: Option<Arc<persistence::SqliteStore>>,
 ) -> Router {
     // ── REST-based services (original) ──
-    let s3_state = Arc::new(services::s3::S3State::new());
-    let lambda_state = Arc::new(services::lambda::LambdaState::default());
+    let s3_state = Arc::new(services::s3::S3State::new(&_db));
+    let lambda_state = Arc::new(services::lambda::LambdaState::new(&_db));
     let s3_router = services::s3::router(s3_state.clone());
     let lambda_router = services::lambda::router(lambda_state.clone());
     let apigateway_router =
-        services::apigateway::router(Arc::new(services::apigateway::ApiGatewayState::default()));
+        services::apigateway::router(Arc::new(services::apigateway::ApiGatewayState::new(&_db)));
     let route53_router =
         services::route53::router(Arc::new(services::route53::Route53State::default()));
-    let eks_router = services::eks::router(Arc::new(services::eks::EksState::default()));
+    let eks_router = services::eks::router(Arc::new(services::eks::EksState::new(&_db)));
     let cloudfront_router =
-        services::cloudfront::router(Arc::new(services::cloudfront::CloudFrontState::default()));
-    let batch_router = services::batch::router(Arc::new(services::batch::BatchState::default()));
+        services::cloudfront::router(Arc::new(services::cloudfront::CloudFrontState::new(&_db)));
+    let batch_router = services::batch::router(Arc::new(services::batch::BatchState::new(&_db)));
     let backup_router =
-        services::backup::router(Arc::new(services::backup::BackupState::default()));
-    let mq_router = services::mq::router(Arc::new(services::mq::MqState::default()));
-    let xray_router = services::xray::router(Arc::new(services::xray::XRayState::default()));
+        services::backup::router(Arc::new(services::backup::BackupState::new(&_db)));
+    let mq_router = services::mq::router(Arc::new(services::mq::MqState::new(&_db)));
+    let xray_router = services::xray::router(Arc::new(services::xray::XRayState::new(&_db)));
     let appsync_router =
-        services::appsync::router(Arc::new(services::appsync::AppSyncState::default()));
-    let efs_router = services::efs::router(Arc::new(services::efs::EfsState::default()));
+        services::appsync::router(Arc::new(services::appsync::AppSyncState::new(&_db)));
+    let efs_router = services::efs::router(Arc::new(services::efs::EfsState::new(&_db)));
     let guardduty_router =
-        services::guardduty::router(Arc::new(services::guardduty::GuardDutyState::default()));
-    let iot_router = services::iot::router(Arc::new(services::iot::IotState::default()));
-    let macie_router = services::macie::router(Arc::new(services::macie::MacieState::default()));
+        services::guardduty::router(Arc::new(services::guardduty::GuardDutyState::new(&_db)));
+    let iot_router = services::iot::router(Arc::new(services::iot::IotState::new(&_db)));
+    let macie_router = services::macie::router(Arc::new(services::macie::MacieState::new(&_db)));
     let opensearch_router =
-        services::opensearch::router(Arc::new(services::opensearch::OpenSearchState::default()));
-    let polly_router = services::polly::router(Arc::new(services::polly::PollyState::default()));
-    let qldb_router = services::qldb::router(Arc::new(services::qldb::QldbState::default()));
+        services::opensearch::router(Arc::new(services::opensearch::OpenSearchState::new(&_db)));
+    let polly_router = services::polly::router(Arc::new(services::polly::PollyState::new(&_db)));
+    let qldb_router = services::qldb::router(Arc::new(services::qldb::QldbState::new(&_db)));
     let mediaconvert_router = services::mediaconvert::router(Arc::new(
-        services::mediaconvert::MediaConvertState::default(),
+        services::mediaconvert::MediaConvertState::new(&_db),
     ));
     let appconfig_router =
-        services::appconfig::router(Arc::new(services::appconfig::AppConfigState::default()));
+        services::appconfig::router(Arc::new(services::appconfig::AppConfigState::new(&_db)));
     let detective_router =
-        services::detective::router(Arc::new(services::detective::DetectiveState::default()));
+        services::detective::router(Arc::new(services::detective::DetectiveState::new(&_db)));
     let amplify_router =
-        services::amplify::router(Arc::new(services::amplify::AmplifyState::default()));
-    let lex_router = services::lex::router(Arc::new(services::lex::LexState::default()));
+        services::amplify::router(Arc::new(services::amplify::AmplifyState::new(&_db)));
+    let lex_router = services::lex::router(Arc::new(services::lex::LexState::new(&_db)));
     let location_router =
-        services::location::router(Arc::new(services::location::LocationState::default()));
+        services::location::router(Arc::new(services::location::LocationState::new(&_db)));
     let securityhub_router =
-        services::securityhub::router(Arc::new(services::securityhub::SecurityHubState::default()));
+        services::securityhub::router(Arc::new(services::securityhub::SecurityHubState::new(&_db)));
     let bedrock_router =
-        services::bedrock::router(Arc::new(services::bedrock::BedrockState::default()));
+        services::bedrock::router(Arc::new(services::bedrock::BedrockState::new(&_db)));
     let codeartifact_router = services::codeartifact::router(Arc::new(
-        services::codeartifact::CodeArtifactState::default(),
+        services::codeartifact::CodeArtifactState::new(&_db),
     ));
     let pinpoint_router =
-        services::pinpoint::router(Arc::new(services::pinpoint::PinpointState::default()));
+        services::pinpoint::router(Arc::new(services::pinpoint::PinpointState::new(&_db)));
     let connect_router =
-        services::connect::router(Arc::new(services::connect::ConnectState::default()));
+        services::connect::router(Arc::new(services::connect::ConnectState::new(&_db)));
     let glacier_router =
-        services::glacier::router(Arc::new(services::glacier::GlacierState::default()));
+        services::glacier::router(Arc::new(services::glacier::GlacierState::new(&_db)));
     let medialive_router =
-        services::medialive::router(Arc::new(services::medialive::MediaLiveState::default()));
+        services::medialive::router(Arc::new(services::medialive::MediaLiveState::new(&_db)));
     let quicksight_router =
-        services::quicksight::router(Arc::new(services::quicksight::QuickSightState::default()));
+        services::quicksight::router(Arc::new(services::quicksight::QuickSightState::new(&_db)));
 
     // ── REST-based services (batch 6-10) ──
-    let amp_router = services::amp::router(Arc::new(services::amp::AmpState::default()));
+    let amp_router = services::amp::router(Arc::new(services::amp::AmpState::new(&_db)));
     let apigatewayv2_router = services::apigatewayv2::router(Arc::new(
         services::apigatewayv2::ApiGatewayV2State::default(),
     ));
     let appmesh_router =
-        services::appmesh::router(Arc::new(services::appmesh::AppMeshState::default()));
+        services::appmesh::router(Arc::new(services::appmesh::AppMeshState::new(&_db)));
     let auditmanager_router = services::auditmanager::router(Arc::new(
-        services::auditmanager::AuditManagerState::default(),
+        services::auditmanager::AuditManagerState::new(&_db),
     ));
     let braket_router =
-        services::braket::router(Arc::new(services::braket::BraketState::default()));
+        services::braket::router(Arc::new(services::braket::BraketState::new(&_db)));
     let cleanrooms_router =
-        services::cleanrooms::router(Arc::new(services::cleanrooms::CleanRoomsState::default()));
+        services::cleanrooms::router(Arc::new(services::cleanrooms::CleanRoomsState::new(&_db)));
     let customer_profiles_router = services::customer_profiles::router(Arc::new(
-        services::customer_profiles::CustomerProfilesState::default(),
+        services::customer_profiles::CustomerProfilesState::new(&_db),
     ));
     let databrew_router =
-        services::databrew::router(Arc::new(services::databrew::DataBrewState::default()));
+        services::databrew::router(Arc::new(services::databrew::DataBrewState::new(&_db)));
     let dataexchange_router = services::dataexchange::router(Arc::new(
-        services::dataexchange::DataExchangeState::default(),
+        services::dataexchange::DataExchangeState::new(&_db),
     ));
     let datazone_router =
-        services::datazone::router(Arc::new(services::datazone::DataZoneState::default()));
+        services::datazone::router(Arc::new(services::datazone::DataZoneState::new(&_db)));
     let devopsguru_router =
-        services::devopsguru::router(Arc::new(services::devopsguru::DevOpsGuruState::default()));
-    let dlm_router = services::dlm::router(Arc::new(services::dlm::DlmState::default()));
-    let ebs_router = services::ebs::router(Arc::new(services::ebs::EbsState::default()));
+        services::devopsguru::router(Arc::new(services::devopsguru::DevOpsGuruState::new(&_db)));
+    let dlm_router = services::dlm::router(Arc::new(services::dlm::DlmState::new(&_db)));
+    let ebs_router = services::ebs::router(Arc::new(services::ebs::EbsState::new(&_db)));
     let emr_serverless_router = services::emr_serverless::router(Arc::new(
-        services::emr_serverless::EmrServerlessState::default(),
+        services::emr_serverless::EmrServerlessState::new(&_db),
     ));
     let entity_resolution_router = services::entity_resolution::router(Arc::new(
-        services::entity_resolution::EntityResolutionState::default(),
+        services::entity_resolution::EntityResolutionState::new(&_db),
     ));
     let eventbridge_scheduler_router = services::eventbridge_scheduler::router(Arc::new(
-        services::eventbridge_scheduler::EventBridgeSchedulerState::default(),
+        services::eventbridge_scheduler::EventBridgeSchedulerState::new(&_db),
     ));
     let finspace_router =
-        services::finspace::router(Arc::new(services::finspace::FinSpaceState::default()));
-    let fis_router = services::fis::router(Arc::new(services::fis::FisState::default()));
+        services::finspace::router(Arc::new(services::finspace::FinSpaceState::new(&_db)));
+    let fis_router = services::fis::router(Arc::new(services::fis::FisState::new(&_db)));
     let greengrass_router =
-        services::greengrass::router(Arc::new(services::greengrass::GreengrassState::default()));
+        services::greengrass::router(Arc::new(services::greengrass::GreengrassState::new(&_db)));
     let groundstation_router = services::groundstation::router(Arc::new(
-        services::groundstation::GroundStationState::default(),
+        services::groundstation::GroundStationState::new(&_db),
     ));
     let imagebuilder_router = services::imagebuilder::router(Arc::new(
-        services::imagebuilder::ImageBuilderState::default(),
+        services::imagebuilder::ImageBuilderState::new(&_db),
     ));
     let internetmonitor_router = services::internetmonitor::router(Arc::new(
-        services::internetmonitor::InternetMonitorState::default(),
+        services::internetmonitor::InternetMonitorState::new(&_db),
     ));
     let mainframe_router =
-        services::mainframe::router(Arc::new(services::mainframe::MainframeState::default()));
+        services::mainframe::router(Arc::new(services::mainframe::MainframeState::new(&_db)));
     let managedblockchain_router = services::managedblockchain::router(Arc::new(
-        services::managedblockchain::ManagedBlockchainState::default(),
+        services::managedblockchain::ManagedBlockchainState::new(&_db),
     ));
     let managed_grafana_router = services::managed_grafana::router(Arc::new(
-        services::managed_grafana::ManagedGrafanaState::default(),
+        services::managed_grafana::ManagedGrafanaState::new(&_db),
     ));
     let mediapackage_router = services::mediapackage::router(Arc::new(
-        services::mediapackage::MediaPackageState::default(),
+        services::mediapackage::MediaPackageState::new(&_db),
     ));
     let mediatailor_router =
-        services::mediatailor::router(Arc::new(services::mediatailor::MediaTailorState::default()));
-    let mwaa_router = services::mwaa::router(Arc::new(services::mwaa::MwaaState::default()));
+        services::mediatailor::router(Arc::new(services::mediatailor::MediaTailorState::new(&_db)));
+    let mwaa_router = services::mwaa::router(Arc::new(services::mwaa::MwaaState::new(&_db)));
     let networkmanager_router = services::networkmanager::router(Arc::new(
-        services::networkmanager::NetworkManagerState::default(),
+        services::networkmanager::NetworkManagerState::new(&_db),
     ));
-    let omics_router = services::omics::router(Arc::new(services::omics::OmicsState::default()));
+    let omics_router = services::omics::router(Arc::new(services::omics::OmicsState::new(&_db)));
     let outposts_router =
-        services::outposts::router(Arc::new(services::outposts::OutpostsState::default()));
-    let pipes_router = services::pipes::router(Arc::new(services::pipes::PipesState::default()));
+        services::outposts::router(Arc::new(services::outposts::OutpostsState::new(&_db)));
+    let pipes_router = services::pipes::router(Arc::new(services::pipes::PipesState::new(&_db)));
     let rolesanywhere_router = services::rolesanywhere::router(Arc::new(
-        services::rolesanywhere::RolesAnywhereState::default(),
+        services::rolesanywhere::RolesAnywhereState::new(&_db),
     ));
-    let rum_router = services::rum::router(Arc::new(services::rum::RumState::default()));
+    let rum_router = services::rum::router(Arc::new(services::rum::RumState::new(&_db)));
     let schemas_router =
-        services::schemas::router(Arc::new(services::schemas::SchemasState::default()));
+        services::schemas::router(Arc::new(services::schemas::SchemasState::new(&_db)));
     let securitylake_router = services::securitylake::router(Arc::new(
-        services::securitylake::SecurityLakeState::default(),
+        services::securitylake::SecurityLakeState::new(&_db),
     ));
     let serverlessrepo_router = services::serverlessrepo::router(Arc::new(
-        services::serverlessrepo::ServerlessRepoState::default(),
+        services::serverlessrepo::ServerlessRepoState::new(&_db),
     ));
     let synthetics_router =
-        services::synthetics::router(Arc::new(services::synthetics::SyntheticsState::default()));
+        services::synthetics::router(Arc::new(services::synthetics::SyntheticsState::new(&_db)));
     let vpc_lattice_router =
-        services::vpc_lattice::router(Arc::new(services::vpc_lattice::VpcLatticeState::default()));
+        services::vpc_lattice::router(Arc::new(services::vpc_lattice::VpcLatticeState::new(&_db)));
     let wellarchitected_router = services::wellarchitected::router(Arc::new(
-        services::wellarchitected::WellArchitectedState::default(),
+        services::wellarchitected::WellArchitectedState::new(&_db),
     ));
     let workdocs_router =
-        services::workdocs::router(Arc::new(services::workdocs::WorkDocsState::default()));
+        services::workdocs::router(Arc::new(services::workdocs::WorkDocsState::new(&_db)));
 
     // ── Dispatch-based services (JSON + Query protocol) ──
     let dispatch_state = DispatchState {
         // Query protocol
-        sqs: Arc::new(services::sqs::SqsState::new()),
-        sns: Arc::new(services::sns::SnsState::new()),
-        iam: Arc::new(services::iam::IamState::default()),
+        sqs: Arc::new(services::sqs::SqsState::new(&_db)),
+        sns: Arc::new(services::sns::SnsState::new(&_db)),
+        iam: Arc::new(services::iam::IamState::new(&_db)),
         sts: Arc::new(services::sts::StsState::default()),
         ec2: Arc::new(services::ec2::Ec2State::new(
             _config.account_id.clone(),
             _config.region.clone(),
+            &_db,
         )),
-        cloudwatch: Arc::new(services::cloudwatch::CloudWatchState::default()),
-        autoscaling: Arc::new(services::autoscaling::AutoScalingState::default()),
-        elasticbeanstalk: Arc::new(services::elasticbeanstalk::ElasticBeanstalkState::default()),
-        cloudsearch: Arc::new(services::cloudsearch::CloudSearchState::default()),
+        cloudwatch: Arc::new(services::cloudwatch::CloudWatchState::new(&_db)),
+        autoscaling: Arc::new(services::autoscaling::AutoScalingState::new(&_db)),
+        elasticbeanstalk: Arc::new(services::elasticbeanstalk::ElasticBeanstalkState::new(&_db)),
+        cloudsearch: Arc::new(services::cloudsearch::CloudSearchState::new(&_db)),
         // JSON protocol (original)
-        dynamodb: Arc::new(services::dynamodb::DynamoDbState::default()),
-        cw: Arc::new(services::cloudwatch_logs::CloudWatchLogsState::default()),
-        sm: Arc::new(services::secretsmanager::SecretsManagerState::default()),
-        ssm: Arc::new(services::ssm::SsmState::default()),
-        ecs: Arc::new(services::ecs::EcsState::default()),
-        sfn: Arc::new(services::stepfunctions::StepFunctionsState::default()),
-        kinesis: Arc::new(services::kinesis::KinesisState::default()),
-        eventbridge: Arc::new(services::eventbridge::EventBridgeState::default()),
-        kms: Arc::new(services::kms::KmsState::default()),
-        acm: Arc::new(services::acm::AcmState::default()),
-        rds: Arc::new(services::rds::RdsState::default()),
-        elasticache: Arc::new(services::elasticache::ElastiCacheState::default()),
-        redshift: Arc::new(services::redshift::RedshiftState::default()),
-        cognito: Arc::new(services::cognito::CognitoState::default()),
-        cloudformation: Arc::new(services::cloudformation::CloudFormationState::default()),
-        ecr: Arc::new(services::ecr::EcrState::default()),
-        elb: Arc::new(services::elb::ElbState::default()),
-        ses: Arc::new(services::ses::SesState::default()),
-        firehose: Arc::new(services::firehose::FirehoseState::default()),
-        glue: Arc::new(services::glue::GlueState::default()),
-        athena: Arc::new(services::athena::AthenaState::default()),
-        codebuild: Arc::new(services::codebuild::CodeBuildState::default()),
-        codepipeline: Arc::new(services::codepipeline::CodePipelineState::default()),
-        waf: Arc::new(services::waf::WafState::default()),
-        config_service: Arc::new(services::config_service::ConfigServiceState::default()),
-        organizations: Arc::new(services::organizations::OrganizationsState::default()),
-        msk: Arc::new(services::msk::MskState::default()),
-        textract: Arc::new(services::textract::TextractState::default()),
-        translate: Arc::new(services::translate::TranslateState::default()),
-        comprehend: Arc::new(services::comprehend::ComprehendState::default()),
-        rekognition: Arc::new(services::rekognition::RekognitionState::default()),
-        sagemaker: Arc::new(services::sagemaker::SageMakerState::default()),
-        cloudtrail: Arc::new(services::cloudtrail::CloudTrailState::default()),
-        codecommit: Arc::new(services::codecommit::CodeCommitState::default()),
-        codedeploy: Arc::new(services::codedeploy::CodeDeployState::default()),
-        documentdb: Arc::new(services::documentdb::DocumentDbState::default()),
-        dms: Arc::new(services::dms::DmsState::default()),
-        emr: Arc::new(services::emr::EmrState::default()),
-        inspector: Arc::new(services::inspector::InspectorState::default()),
-        lightsail: Arc::new(services::lightsail::LightsailState::default()),
-        neptune: Arc::new(services::neptune::NeptuneState::default()),
-        service_catalog: Arc::new(services::service_catalog::ServiceCatalogState::default()),
-        shield: Arc::new(services::shield::ShieldState::default()),
-        timestream: Arc::new(services::timestream::TimestreamState::default()),
-        transfer: Arc::new(services::transfer::TransferState::default()),
-        workspaces: Arc::new(services::workspaces::WorkSpacesState::default()),
-        apprunner: Arc::new(services::apprunner::AppRunnerState::default()),
-        dax: Arc::new(services::dax::DaxState::default()),
-        fsx: Arc::new(services::fsx::FsxState::default()),
-        keyspaces: Arc::new(services::keyspaces::KeyspacesState::default()),
-        kendra: Arc::new(services::kendra::KendraState::default()),
-        lakeformation: Arc::new(services::lakeformation::LakeFormationState::default()),
-        memorydb: Arc::new(services::memorydb::MemoryDbState::default()),
-        cloudmap: Arc::new(services::cloudmap::CloudMapState::default()),
-        forecast: Arc::new(services::forecast::ForecastState::default()),
-        personalize: Arc::new(services::personalize::PersonalizeState::default()),
-        proton: Arc::new(services::proton::ProtonState::default()),
-        sso: Arc::new(services::sso::SsoState::default()),
-        ram: Arc::new(services::ram::RamState::default()),
-        storage_gateway: Arc::new(services::storage_gateway::StorageGatewayState::default()),
+        dynamodb: Arc::new(services::dynamodb::DynamoDbState::new(&_db)),
+        cw: Arc::new(services::cloudwatch_logs::CloudWatchLogsState::new(&_db)),
+        sm: Arc::new(services::secretsmanager::SecretsManagerState::new(&_db)),
+        ssm: Arc::new(services::ssm::SsmState::new(&_db)),
+        ecs: Arc::new(services::ecs::EcsState::new(&_db)),
+        sfn: Arc::new(services::stepfunctions::StepFunctionsState::new(&_db)),
+        kinesis: Arc::new(services::kinesis::KinesisState::new(&_db)),
+        eventbridge: Arc::new(services::eventbridge::EventBridgeState::new(&_db)),
+        kms: Arc::new(services::kms::KmsState::new(&_db)),
+        acm: Arc::new(services::acm::AcmState::new(&_db)),
+        rds: Arc::new(services::rds::RdsState::new(&_db)),
+        elasticache: Arc::new(services::elasticache::ElastiCacheState::new(&_db)),
+        redshift: Arc::new(services::redshift::RedshiftState::new(&_db)),
+        cognito: Arc::new(services::cognito::CognitoState::new(&_db)),
+        cloudformation: Arc::new(services::cloudformation::CloudFormationState::new(&_db)),
+        ecr: Arc::new(services::ecr::EcrState::new(&_db)),
+        elb: Arc::new(services::elb::ElbState::new(&_db)),
+        ses: Arc::new(services::ses::SesState::new(&_db)),
+        firehose: Arc::new(services::firehose::FirehoseState::new(&_db)),
+        glue: Arc::new(services::glue::GlueState::new(&_db)),
+        athena: Arc::new(services::athena::AthenaState::new(&_db)),
+        codebuild: Arc::new(services::codebuild::CodeBuildState::new(&_db)),
+        codepipeline: Arc::new(services::codepipeline::CodePipelineState::new(&_db)),
+        waf: Arc::new(services::waf::WafState::new(&_db)),
+        config_service: Arc::new(services::config_service::ConfigServiceState::new(&_db)),
+        organizations: Arc::new(services::organizations::OrganizationsState::new(&_db)),
+        msk: Arc::new(services::msk::MskState::new(&_db)),
+        textract: Arc::new(services::textract::TextractState::new(&_db)),
+        translate: Arc::new(services::translate::TranslateState::new(&_db)),
+        comprehend: Arc::new(services::comprehend::ComprehendState::new(&_db)),
+        rekognition: Arc::new(services::rekognition::RekognitionState::new(&_db)),
+        sagemaker: Arc::new(services::sagemaker::SageMakerState::new(&_db)),
+        cloudtrail: Arc::new(services::cloudtrail::CloudTrailState::new(&_db)),
+        codecommit: Arc::new(services::codecommit::CodeCommitState::new(&_db)),
+        codedeploy: Arc::new(services::codedeploy::CodeDeployState::new(&_db)),
+        documentdb: Arc::new(services::documentdb::DocumentDbState::new(&_db)),
+        dms: Arc::new(services::dms::DmsState::new(&_db)),
+        emr: Arc::new(services::emr::EmrState::new(&_db)),
+        inspector: Arc::new(services::inspector::InspectorState::new(&_db)),
+        lightsail: Arc::new(services::lightsail::LightsailState::new(&_db)),
+        neptune: Arc::new(services::neptune::NeptuneState::new(&_db)),
+        service_catalog: Arc::new(services::service_catalog::ServiceCatalogState::new(&_db)),
+        shield: Arc::new(services::shield::ShieldState::new(&_db)),
+        timestream: Arc::new(services::timestream::TimestreamState::new(&_db)),
+        transfer: Arc::new(services::transfer::TransferState::new(&_db)),
+        workspaces: Arc::new(services::workspaces::WorkSpacesState::new(&_db)),
+        apprunner: Arc::new(services::apprunner::AppRunnerState::new(&_db)),
+        dax: Arc::new(services::dax::DaxState::new(&_db)),
+        fsx: Arc::new(services::fsx::FsxState::new(&_db)),
+        keyspaces: Arc::new(services::keyspaces::KeyspacesState::new(&_db)),
+        kendra: Arc::new(services::kendra::KendraState::new(&_db)),
+        lakeformation: Arc::new(services::lakeformation::LakeFormationState::new(&_db)),
+        memorydb: Arc::new(services::memorydb::MemoryDbState::new(&_db)),
+        cloudmap: Arc::new(services::cloudmap::CloudMapState::new(&_db)),
+        forecast: Arc::new(services::forecast::ForecastState::new(&_db)),
+        personalize: Arc::new(services::personalize::PersonalizeState::new(&_db)),
+        proton: Arc::new(services::proton::ProtonState::new(&_db)),
+        sso: Arc::new(services::sso::SsoState::new(&_db)),
+        ram: Arc::new(services::ram::RamState::new(&_db)),
+        storage_gateway: Arc::new(services::storage_gateway::StorageGatewayState::new(&_db)),
         // JSON protocol (batch 6-10)
-        accessanalyzer: Arc::new(services::accessanalyzer::AccessAnalyzerState::default()),
-        acm_pca: Arc::new(services::acm_pca::AcmPcaState::default()),
-        appflow: Arc::new(services::appflow::AppFlowState::default()),
-        appstream: Arc::new(services::appstream::AppStreamState::default()),
+        accessanalyzer: Arc::new(services::accessanalyzer::AccessAnalyzerState::new(&_db)),
+        acm_pca: Arc::new(services::acm_pca::AcmPcaState::new(&_db)),
+        appflow: Arc::new(services::appflow::AppFlowState::new(&_db)),
+        appstream: Arc::new(services::appstream::AppStreamState::new(&_db)),
         application_autoscaling: Arc::new(
-            services::application_autoscaling::ApplicationAutoscalingState::default(),
+            services::application_autoscaling::ApplicationAutoscalingState::new(&_db),
         ),
-        budgets: Arc::new(services::budgets::BudgetsState::default()),
-        chatbot: Arc::new(services::chatbot::ChatbotState::default()),
+        budgets: Arc::new(services::budgets::BudgetsState::new(&_db)),
+        chatbot: Arc::new(services::chatbot::ChatbotState::new(&_db)),
         cloud9: Arc::new(services::cloud9::Cloud9State::default()),
-        cloudcontrol: Arc::new(services::cloudcontrol::CloudControlState::default()),
-        cloudhsm: Arc::new(services::cloudhsm::CloudHsmState::default()),
-        codeguru: Arc::new(services::codeguru::CodeGuruState::default()),
-        compute_optimizer: Arc::new(services::compute_optimizer::ComputeOptimizerState::default()),
-        controltower: Arc::new(services::controltower::ControlTowerState::default()),
+        cloudcontrol: Arc::new(services::cloudcontrol::CloudControlState::new(&_db)),
+        cloudhsm: Arc::new(services::cloudhsm::CloudHsmState::new(&_db)),
+        codeguru: Arc::new(services::codeguru::CodeGuruState::new(&_db)),
+        compute_optimizer: Arc::new(services::compute_optimizer::ComputeOptimizerState::new(
+            &_db,
+        )),
+        controltower: Arc::new(services::controltower::ControlTowerState::new(&_db)),
         costexplorer: Arc::new(services::costexplorer::CostExplorerState),
-        cur: Arc::new(services::cur::CurState::default()),
-        datapipeline: Arc::new(services::datapipeline::DataPipelineState::default()),
-        datasync: Arc::new(services::datasync::DataSyncState::default()),
-        devicefarm: Arc::new(services::devicefarm::DeviceFarmState::default()),
-        directconnect: Arc::new(services::directconnect::DirectConnectState::default()),
-        directory_service: Arc::new(services::directory_service::DirectoryServiceState::default()),
-        firewall_manager: Arc::new(services::firewall_manager::FirewallManagerState::default()),
-        frauddetector: Arc::new(services::frauddetector::FraudDetectorState::default()),
-        gamelift: Arc::new(services::gamelift::GameLiftState::default()),
-        globalaccelerator: Arc::new(services::globalaccelerator::GlobalAcceleratorState::default()),
-        health: Arc::new(services::health::HealthState::default()),
-        healthlake: Arc::new(services::healthlake::HealthLakeState::default()),
-        identitystore: Arc::new(services::identitystore::IdentityStoreState::default()),
-        ivs: Arc::new(services::ivs::IvsState::default()),
-        license_manager: Arc::new(services::license_manager::LicenseManagerState::default()),
-        mediastore: Arc::new(services::mediastore::MediaStoreState::default()),
-        network_firewall: Arc::new(services::network_firewall::NetworkFirewallState::default()),
+        cur: Arc::new(services::cur::CurState::new(&_db)),
+        datapipeline: Arc::new(services::datapipeline::DataPipelineState::new(&_db)),
+        datasync: Arc::new(services::datasync::DataSyncState::new(&_db)),
+        devicefarm: Arc::new(services::devicefarm::DeviceFarmState::new(&_db)),
+        directconnect: Arc::new(services::directconnect::DirectConnectState::new(&_db)),
+        directory_service: Arc::new(services::directory_service::DirectoryServiceState::new(
+            &_db,
+        )),
+        firewall_manager: Arc::new(services::firewall_manager::FirewallManagerState::new(&_db)),
+        frauddetector: Arc::new(services::frauddetector::FraudDetectorState::new(&_db)),
+        gamelift: Arc::new(services::gamelift::GameLiftState::new(&_db)),
+        globalaccelerator: Arc::new(services::globalaccelerator::GlobalAcceleratorState::new(
+            &_db,
+        )),
+        health: Arc::new(services::health::HealthState::new(&_db)),
+        healthlake: Arc::new(services::healthlake::HealthLakeState::new(&_db)),
+        identitystore: Arc::new(services::identitystore::IdentityStoreState::new(&_db)),
+        ivs: Arc::new(services::ivs::IvsState::new(&_db)),
+        license_manager: Arc::new(services::license_manager::LicenseManagerState::new(&_db)),
+        mediastore: Arc::new(services::mediastore::MediaStoreState::new(&_db)),
+        network_firewall: Arc::new(services::network_firewall::NetworkFirewallState::new(&_db)),
         pricing: Arc::new(services::pricing::PricingState),
-        resiliencehub: Arc::new(services::resiliencehub::ResilienceHubState::default()),
+        resiliencehub: Arc::new(services::resiliencehub::ResilienceHubState::new(&_db)),
         route53domains: Arc::new(services::route53domains::Route53DomainsState::default()),
         route53resolver: Arc::new(services::route53resolver::Route53ResolverState::default()),
-        savingsplans: Arc::new(services::savingsplans::SavingsPlansState::default()),
-        service_quotas: Arc::new(services::service_quotas::ServiceQuotasState::default()),
-        snowball: Arc::new(services::snowball::SnowballState::default()),
-        support: Arc::new(services::support::SupportState::default()),
-        swf: Arc::new(services::swf::SwfState::default()),
+        savingsplans: Arc::new(services::savingsplans::SavingsPlansState::new(&_db)),
+        service_quotas: Arc::new(services::service_quotas::ServiceQuotasState::new(&_db)),
+        snowball: Arc::new(services::snowball::SnowballState::new(&_db)),
+        support: Arc::new(services::support::SupportState::new(&_db)),
+        swf: Arc::new(services::swf::SwfState::new(&_db)),
         verifiedpermissions: Arc::new(
-            services::verifiedpermissions::VerifiedPermissionsState::default(),
+            services::verifiedpermissions::VerifiedPermissionsState::new(&_db),
         ),
-        workmail: Arc::new(services::workmail::WorkMailState::default()),
+        workmail: Arc::new(services::workmail::WorkMailState::new(&_db)),
         s3: s3_state,
         lambda: lambda_state,
     };

@@ -37,6 +37,14 @@ pub struct GlacierState {
     pub vaults: PersistedDashMap<Vault>,
 }
 
+impl GlacierState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            vaults: PersistedDashMap::new("glacier_vaults", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

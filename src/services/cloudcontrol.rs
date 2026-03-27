@@ -33,6 +33,14 @@ pub struct CloudControlState {
     pub resources: PersistedDashMap<Resource>,
 }
 
+impl CloudControlState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            resources: PersistedDashMap::new("cloudcontrol_resources", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

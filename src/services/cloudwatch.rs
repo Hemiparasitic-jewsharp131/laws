@@ -61,6 +61,15 @@ impl Default for CloudWatchState {
     }
 }
 
+impl CloudWatchState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            metrics: Arc::new(PersistedDashMap::new("cloudwatch_metrics", db)),
+            alarms: Arc::new(PersistedDashMap::new("cloudwatch_alarms", db)),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

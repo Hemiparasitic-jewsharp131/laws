@@ -42,6 +42,14 @@ pub struct BudgetsState {
     pub budgets: PersistedDashMap<Budget>,
 }
 
+impl BudgetsState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            budgets: PersistedDashMap::new("budgets_budgets", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

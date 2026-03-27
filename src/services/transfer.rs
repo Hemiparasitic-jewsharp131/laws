@@ -45,6 +45,15 @@ pub struct TransferState {
     pub users: PersistedDashMap<TransferUser>,
 }
 
+impl TransferState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            servers: PersistedDashMap::new("transfer_servers", db),
+            users: PersistedDashMap::new("transfer_users", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

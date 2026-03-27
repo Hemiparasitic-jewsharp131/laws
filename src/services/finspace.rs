@@ -53,6 +53,15 @@ pub struct FinSpaceState {
     pub kx_databases: PersistedDashMap<KxDatabase>,
 }
 
+impl FinSpaceState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            environments: PersistedDashMap::new("finspace_environments", db),
+            kx_databases: PersistedDashMap::new("finspace_kx_databases", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

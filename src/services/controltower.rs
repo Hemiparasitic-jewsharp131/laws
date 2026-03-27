@@ -45,6 +45,15 @@ pub struct ControlTowerState {
     pub enabled_controls: PersistedDashMap<EnabledControl>,
 }
 
+impl ControlTowerState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            landing_zones: PersistedDashMap::new("controltower_landing_zones", db),
+            enabled_controls: PersistedDashMap::new("controltower_enabled_controls", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

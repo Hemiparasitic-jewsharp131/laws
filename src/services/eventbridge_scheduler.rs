@@ -61,6 +61,15 @@ pub struct EventBridgeSchedulerState {
     pub schedule_groups: PersistedDashMap<ScheduleGroup>,
 }
 
+impl EventBridgeSchedulerState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            schedules: PersistedDashMap::new("eventbridge_scheduler_schedules", db),
+            schedule_groups: PersistedDashMap::new("eventbridge_scheduler_schedule_groups", db),
+        }
+    }
+}
+
 impl Default for EventBridgeSchedulerState {
     fn default() -> Self {
         let schedule_groups = PersistedDashMap::default();

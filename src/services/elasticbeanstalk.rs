@@ -49,6 +49,15 @@ pub struct ElasticBeanstalkState {
     pub environments: PersistedDashMap<BeanstalkEnvironment>,
 }
 
+impl ElasticBeanstalkState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            applications: PersistedDashMap::new("elasticbeanstalk_applications", db),
+            environments: PersistedDashMap::new("elasticbeanstalk_environments", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

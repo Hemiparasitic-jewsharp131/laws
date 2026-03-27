@@ -47,6 +47,14 @@ pub struct EmrState {
     pub clusters: PersistedDashMap<EmrCluster>,
 }
 
+impl EmrState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            clusters: PersistedDashMap::new("emr_clusters", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

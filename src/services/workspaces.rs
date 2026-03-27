@@ -45,6 +45,15 @@ pub struct WorkSpacesState {
     pub directories: PersistedDashMap<WorkspaceDirectory>,
 }
 
+impl WorkSpacesState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            workspaces: PersistedDashMap::new("workspaces_workspaces", db),
+            directories: PersistedDashMap::new("workspaces_directories", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

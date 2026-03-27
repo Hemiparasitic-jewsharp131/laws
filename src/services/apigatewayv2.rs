@@ -52,6 +52,15 @@ pub struct ApiGatewayV2State {
     pub routes: PersistedDashMap<Route>,
 }
 
+impl ApiGatewayV2State {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            apis: PersistedDashMap::new("apigatewayv2_apis", db),
+            routes: PersistedDashMap::new("apigatewayv2_routes", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

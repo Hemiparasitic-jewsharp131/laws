@@ -55,6 +55,16 @@ pub struct WafState {
     pub ip_sets: PersistedDashMap<IpSet>,
 }
 
+impl WafState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            web_acls: PersistedDashMap::new("waf_web_acls", db),
+            rule_groups: PersistedDashMap::new("waf_rule_groups", db),
+            ip_sets: PersistedDashMap::new("waf_ip_sets", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

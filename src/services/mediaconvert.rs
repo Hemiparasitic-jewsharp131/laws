@@ -51,6 +51,15 @@ pub struct MediaConvertState {
     pub queues: PersistedDashMap<MediaConvertQueue>,
 }
 
+impl MediaConvertState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            jobs: PersistedDashMap::new("mediaconvert_jobs", db),
+            queues: PersistedDashMap::new("mediaconvert_queues", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

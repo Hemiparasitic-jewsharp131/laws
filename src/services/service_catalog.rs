@@ -46,6 +46,15 @@ pub struct ServiceCatalogState {
     pub products: PersistedDashMap<Product>,
 }
 
+impl ServiceCatalogState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            portfolios: PersistedDashMap::new("service_catalog_portfolios", db),
+            products: PersistedDashMap::new("service_catalog_products", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Handler
 // ---------------------------------------------------------------------------

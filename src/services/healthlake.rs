@@ -47,6 +47,15 @@ pub struct HealthLakeState {
     pub import_jobs: PersistedDashMap<FhirImportJob>,
 }
 
+impl HealthLakeState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            datastores: PersistedDashMap::new("healthlake_datastores", db),
+            import_jobs: PersistedDashMap::new("healthlake_import_jobs", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Handler
 // ---------------------------------------------------------------------------

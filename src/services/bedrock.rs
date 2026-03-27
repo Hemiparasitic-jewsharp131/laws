@@ -49,6 +49,15 @@ pub struct BedrockState {
     pub custom_models: PersistedDashMap<CustomModel>,
 }
 
+impl BedrockState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            model_customization_jobs: PersistedDashMap::new("bedrock_model_customization_jobs", db),
+            custom_models: PersistedDashMap::new("bedrock_custom_models", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

@@ -41,6 +41,15 @@ pub struct LakeFormationState {
     pub permissions: PersistedDashMap<LakeFormationPermission>,
 }
 
+impl LakeFormationState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            resources: PersistedDashMap::new("lakeformation_resources", db),
+            permissions: PersistedDashMap::new("lakeformation_permissions", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Handler
 // ---------------------------------------------------------------------------

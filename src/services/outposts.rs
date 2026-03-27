@@ -51,6 +51,15 @@ pub struct OutpostsState {
     pub sites: PersistedDashMap<OutpostSite>,
 }
 
+impl OutpostsState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            outposts: PersistedDashMap::new("outposts_outposts", db),
+            sites: PersistedDashMap::new("outposts_sites", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

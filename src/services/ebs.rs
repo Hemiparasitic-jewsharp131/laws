@@ -30,6 +30,14 @@ pub struct EbsState {
     pub snapshots: PersistedDashMap<Snapshot>,
 }
 
+impl EbsState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            snapshots: PersistedDashMap::new("ebs_snapshots", db),
+        }
+    }
+}
+
 pub fn router(state: Arc<EbsState>) -> axum::Router {
     axum::Router::new()
         .route("/snapshots", post(start_snapshot))

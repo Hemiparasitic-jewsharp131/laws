@@ -45,6 +45,14 @@ pub struct AcmPcaState {
     pub certificate_authorities: PersistedDashMap<CertificateAuthority>,
 }
 
+impl AcmPcaState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            certificate_authorities: PersistedDashMap::new("acm_pca_certificate_authorities", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

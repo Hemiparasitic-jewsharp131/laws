@@ -40,6 +40,15 @@ pub struct KeyspacesState {
     pub tables: PersistedDashMap<KeyspacesTable>,
 }
 
+impl KeyspacesState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            keyspaces: PersistedDashMap::new("keyspaces_keyspaces", db),
+            tables: PersistedDashMap::new("keyspaces_tables", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

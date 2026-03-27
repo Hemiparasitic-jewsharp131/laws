@@ -57,6 +57,16 @@ pub struct LocationState {
     pub trackers: PersistedDashMap<Tracker>,
 }
 
+impl LocationState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            maps: PersistedDashMap::new("location_maps", db),
+            geofence_collections: PersistedDashMap::new("location_geofence_collections", db),
+            trackers: PersistedDashMap::new("location_trackers", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

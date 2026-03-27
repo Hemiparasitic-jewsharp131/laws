@@ -51,6 +51,16 @@ pub struct EcsState {
     pub tasks: PersistedDashMap<EcsTask>,
 }
 
+impl EcsState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            clusters: PersistedDashMap::new("ecs_clusters", db),
+            task_definitions: PersistedDashMap::new("ecs_task_definitions", db),
+            tasks: PersistedDashMap::new("ecs_tasks", db),
+        }
+    }
+}
+
 impl Default for EcsState {
     fn default() -> Self {
         let clusters = PersistedDashMap::default();

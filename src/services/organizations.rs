@@ -45,6 +45,16 @@ pub struct OrganizationsState {
     pub organizational_units: PersistedDashMap<OrganizationalUnit>,
 }
 
+impl OrganizationsState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            organization: PersistedDashMap::new("organizations_organization", db),
+            accounts: PersistedDashMap::new("organizations_accounts", db),
+            organizational_units: PersistedDashMap::new("organizations_organizational_units", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

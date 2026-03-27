@@ -55,6 +55,16 @@ pub struct GlobalAcceleratorState {
     pub endpoint_groups: PersistedDashMap<EndpointGroup>,
 }
 
+impl GlobalAcceleratorState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            accelerators: PersistedDashMap::new("globalaccelerator_accelerators", db),
+            listeners: PersistedDashMap::new("globalaccelerator_listeners", db),
+            endpoint_groups: PersistedDashMap::new("globalaccelerator_endpoint_groups", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Handler
 // ---------------------------------------------------------------------------

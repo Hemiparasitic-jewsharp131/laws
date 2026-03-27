@@ -46,6 +46,15 @@ pub struct InspectorState {
     pub findings: PersistedDashMap<InspectorFinding>,
 }
 
+impl InspectorState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            assessment_templates: PersistedDashMap::new("inspector_assessment_templates", db),
+            findings: PersistedDashMap::new("inspector_findings", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

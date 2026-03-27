@@ -49,6 +49,15 @@ pub struct MediaTailorState {
     pub channels: PersistedDashMap<Channel>,
 }
 
+impl MediaTailorState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            configurations: PersistedDashMap::new("mediatailor_configurations", db),
+            channels: PersistedDashMap::new("mediatailor_channels", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

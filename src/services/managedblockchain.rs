@@ -51,6 +51,15 @@ pub struct ManagedBlockchainState {
     pub nodes: PersistedDashMap<Node>,
 }
 
+impl ManagedBlockchainState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            networks: PersistedDashMap::new("managedblockchain_networks", db),
+            nodes: PersistedDashMap::new("managedblockchain_nodes", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

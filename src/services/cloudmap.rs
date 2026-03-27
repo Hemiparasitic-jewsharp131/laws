@@ -47,6 +47,15 @@ pub struct CloudMapState {
     pub services: PersistedDashMap<CloudMapService>,
 }
 
+impl CloudMapState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            namespaces: PersistedDashMap::new("cloudmap_namespaces", db),
+            services: PersistedDashMap::new("cloudmap_services", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Handler
 // ---------------------------------------------------------------------------

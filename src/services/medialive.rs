@@ -49,6 +49,15 @@ pub struct MediaLiveState {
     pub inputs: PersistedDashMap<Input>,
 }
 
+impl MediaLiveState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            channels: PersistedDashMap::new("medialive_channels", db),
+            inputs: PersistedDashMap::new("medialive_inputs", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------

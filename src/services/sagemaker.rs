@@ -53,6 +53,16 @@ pub struct SageMakerState {
     pub endpoints: PersistedDashMap<SageMakerEndpoint>,
 }
 
+impl SageMakerState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            notebook_instances: PersistedDashMap::new("sagemaker_notebook_instances", db),
+            training_jobs: PersistedDashMap::new("sagemaker_training_jobs", db),
+            endpoints: PersistedDashMap::new("sagemaker_endpoints", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Handler
 // ---------------------------------------------------------------------------

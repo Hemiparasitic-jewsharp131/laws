@@ -45,6 +45,15 @@ pub struct CodePipelineState {
     pub executions: PersistedDashMap<PipelineExecution>,
 }
 
+impl CodePipelineState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            pipelines: PersistedDashMap::new("codepipeline_pipelines", db),
+            executions: PersistedDashMap::new("codepipeline_executions", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

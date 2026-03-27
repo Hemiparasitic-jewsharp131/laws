@@ -48,6 +48,16 @@ pub struct ForecastState {
     pub forecasts: PersistedDashMap<Forecast>,
 }
 
+impl ForecastState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            datasets: PersistedDashMap::new("forecast_datasets", db),
+            predictors: PersistedDashMap::new("forecast_predictors", db),
+            forecasts: PersistedDashMap::new("forecast_forecasts", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Handler
 // ---------------------------------------------------------------------------

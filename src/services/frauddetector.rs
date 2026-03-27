@@ -43,6 +43,15 @@ pub struct FraudDetectorState {
     pub models: PersistedDashMap<Model>,
 }
 
+impl FraudDetectorState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            detectors: PersistedDashMap::new("frauddetector_detectors", db),
+            models: PersistedDashMap::new("frauddetector_models", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

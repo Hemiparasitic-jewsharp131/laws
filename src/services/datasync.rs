@@ -42,6 +42,15 @@ pub struct DataSyncState {
     pub locations: PersistedDashMap<DataSyncLocation>,
 }
 
+impl DataSyncState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            tasks: PersistedDashMap::new("datasync_tasks", db),
+            locations: PersistedDashMap::new("datasync_locations", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

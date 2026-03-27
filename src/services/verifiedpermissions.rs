@@ -44,6 +44,15 @@ pub struct VerifiedPermissionsState {
     pub policies: PersistedDashMap<Policy>,
 }
 
+impl VerifiedPermissionsState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            policy_stores: PersistedDashMap::new("verifiedpermissions_policy_stores", db),
+            policies: PersistedDashMap::new("verifiedpermissions_policies", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Request handler
 // ---------------------------------------------------------------------------

@@ -41,6 +41,14 @@ pub struct PipesState {
     pub pipes: PersistedDashMap<Pipe>,
 }
 
+impl PipesState {
+    pub fn new(db: &Option<std::sync::Arc<crate::persistence::SqliteStore>>) -> Self {
+        Self {
+            pipes: PersistedDashMap::new("pipes_pipes", db),
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------
