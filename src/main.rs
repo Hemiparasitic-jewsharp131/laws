@@ -321,7 +321,10 @@ fn build_router(_config: &Config, dashboard_state: DashboardState) -> Router {
         sns: Arc::new(services::sns::SnsState::new()),
         iam: Arc::new(services::iam::IamState::default()),
         sts: Arc::new(services::sts::StsState::default()),
-        ec2: Arc::new(services::ec2::Ec2State::default()),
+        ec2: Arc::new(services::ec2::Ec2State::new(
+            _config.account_id.clone(),
+            _config.region.clone(),
+        )),
         cloudwatch: Arc::new(services::cloudwatch::CloudWatchState::default()),
         autoscaling: Arc::new(services::autoscaling::AutoScalingState::default()),
         elasticbeanstalk: Arc::new(services::elasticbeanstalk::ElasticBeanstalkState::default()),

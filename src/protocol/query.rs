@@ -87,6 +87,8 @@ pub fn parse_query_request(
 
 /// Build a success XML response in the standard AWS Query envelope.
 ///
+/// Used by IAM, STS, SQS, SNS, CloudFormation, RDS, ELB, etc.
+///
 /// ```xml
 /// <{action}Response xmlns="...">
 ///   <{action}Result>
@@ -107,6 +109,35 @@ pub fn xml_response(action: &str, inner_xml: &str) -> Response {
   <ResponseMetadata>
     <RequestId>{request_id}</RequestId>
   </ResponseMetadata>
+</{action}Response>"#
+    );
+
+    (
+        StatusCode::OK,
+        [("content-type", "text/xml; charset=utf-8")],
+        body,
+    )
+        .into_response()
+}
+
+/// Build a success XML response in the EC2 Query envelope.
+///
+/// EC2 uses a different response format than other Query-protocol services:
+/// no `Result` wrapper, `requestId` as a direct child element, and the
+/// `ec2.amazonaws.com` namespace.
+///
+/// ```xml
+/// <{action}Response xmlns="http://ec2.amazonaws.com/doc/2016-11-15/">
+///     <requestId>...</requestId>
+///     {inner_xml}
+/// </{action}Response>
+/// ```
+pub fn xml_response_ec2(action: &str, inner_xml: &str) -> Response {
+    let request_id = super::request_id();
+    let body = format!(
+        r#"<{action}Response xmlns="http://ec2.amazonaws.com/doc/2016-11-15/">
+    <requestId>{request_id}</requestId>
+    {inner_xml}
 </{action}Response>"#
     );
 
